@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>स्व. नारायण महतो का वंशावली - ऐतिहासिक पारिवारिक अभिलेख</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- D3.js for Diagrams & html2pdf / html2canvas for Photoshop-style Chart PDF/Image Export -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #8B261D;
+            --primary-light: #FDF3E7;
+            --primary-dark: #5C1610;
+            --accent: #C5892B;
+            --bg: #FAF6F0;
+            --card-bg: #FFFDF9;
+            --text: #2C1A11;
+            --text-muted: #6E5648;
+            --border: #DFC8B0;
+            --line-color: #B47B44;
+            --shadow: 0 6px 24px -4px rgba(92, 22, 16, 0.1);
+        }
+
+        [data-theme="saffron"] {
+            --primary: #C2410C;
+            --primary-light: #FFEDD5;
+            --primary-dark: #7C2D12;
+            --accent: #D97706;
+            --bg: #FFFBEB;
+            --card-bg: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #64748B;
+            --border: #FED7AA;
+            --line-color: #EA580C;
+        }
+
+        [data-theme="dark"] {
+            --primary: #F59E0B;
+            --primary-light: #272015;
+            --primary-dark: #D97706;
+            --accent: #FBBF24;
+            --bg: #0F141C;
+            --card-bg: #1B2432;
+            --text: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border: #334155;
+            --line-color: #F59E0B;
+        }
+
+        [data-theme="emerald"] {
+            --primary: #065F46;
+            --primary-light: #D1FAE5;
+            --primary-dark: #064E3B;
+            --accent: #059669;
+            --bg: #F2FBF7;
+            --card-bg: #FFFFFF;
+            --text: #064E3B;
+            --text-muted: #047857;
+            --border: #A7F3D0;
+            --line-color: #059669;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(var(--border) 0.75px, transparent 0.75px);
+            background-size: 24px 24px;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container { max-width: 1340px; margin: 0 auto; padding: 18px; }
+
+        /* Classic Heritage Top Bar */
+        .mode-banner {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+            padding: 10px 18px; border-radius: 10px; margin-bottom: 16px; font-size: 0.86rem; font-weight: 600;
+            background: var(--card-bg); border: 1.5px solid var(--border); box-shadow: var(--shadow);
+        }
+        .mode-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+        .mode-public { background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--border); }
+        .mode-admin { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
+
+        /* Classic Royal Record Book Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: #FFFDF9; padding: 28px 24px; border-radius: 16px; text-align: center;
+            box-shadow: var(--shadow); margin-bottom: 20px; position: relative;
+            border: 3px double #FDE68A;
+        }
+        .header-badge {
+            display: inline-block; background: rgba(253, 230, 138, 0.18); border: 1px solid rgba(253, 230, 138, 0.5);
+            color: #FDE68A; padding: 3px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px;
+        }
+        .header h1 { margin: 0 0 6px 0; font-size: clamp(1.7rem, 3.8vw, 2.5rem); font-weight: 800; letter-spacing: 0.5px; }
+        .sub-tagline { font-size: 1.1rem; font-weight: 700; color: #FDE68A; margin-bottom: 6px; }
+        .header p { margin: 3px 0; opacity: 0.92; font-size: 0.9rem; }
+
+        /* Clean Heritage Navigation Tabs */
+        .nav-tabs {
+            display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;
+            background: var(--card-bg); padding: 10px; border-radius: 12px; border: 1.5px solid var(--border); box-shadow: var(--shadow);
+        }
+        .tab-btn {
+            padding: 9px 16px; border-radius: 8px; border: 1px solid transparent;
+            background: transparent; color: var(--text); font-size: 0.88rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn:hover { background: var(--primary-light); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(139, 38, 29, 0.25); }
+
+        /* Compact Summary Strip */
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+        .stat-card {
+            background: var(--card-bg); padding: 12px 16px; border-radius: 12px;
+            border: 1.5px solid var(--border); box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px;
+        }
+        .stat-icon {
+            width: 42px; height: 42px; border-radius: 10px; background: var(--primary-light);
+            color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: 1px solid var(--border);
+        }
+        .stat-val { font-size: 1.4rem; font-weight: 800; color: var(--primary); line-height: 1.1; }
+        .stat-lbl { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+
+        /* Ancestor Finder Search & Action Bar */
+        .top-toolbar {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+            background: var(--card-bg); padding: 14px 18px; border-radius: 12px;
+            border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px;
+        }
+        .search-box { flex: 1; min-width: 240px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid var(--border);
+            border-radius: 8px; font-size: 0.94rem; background: var(--bg); color: var(--text); outline: none;
+        }
+        .search-box input:focus { border-color: var(--primary); }
+        .search-box::before { content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
+
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .btn, select.btn {
+            padding: 8px 14px; border-radius: 8px; border: 1.5px solid var(--border);
+            background: var(--card-bg); color: var(--text); font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; text-decoration: none;
+        }
+        .btn:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); color: white; }
+        .btn-success { background: #059669; color: white; border-color: #059669; }
+        .btn-success:hover { background: #047857; color: white; }
+        .btn-whatsapp { background: #25D366; color: white; border-color: #25D366; }
+        .btn-whatsapp:hover { background: #1DA851; color: white; }
+
+        /* Branch Filter Bar */
+        .branch-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px; }
+        .branch-pill {
+            padding: 7px 14px; border-radius: 8px; background: var(--card-bg);
+            border: 1.5px solid var(--border); color: var(--text); font-weight: 700;
+            font-size: 0.83rem; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+        }
+        .branch-pill.active, .branch-pill:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .diagram-mode-bar {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+            margin-bottom: 14px; padding: 10px 16px; background: var(--primary-light);
+            border-radius: 10px; border: 1px solid var(--border); font-size: 0.88rem;
+        }
+
+        /* Classic Record Tree Card */
+        .tree-card {
+            background: var(--card-bg); padding: 26px; border-radius: 14px;
+            border: 2px solid var(--border); box-shadow: var(--shadow); overflow-x: auto; min-height: 460px;
+        }
+        .tree, .tree ul { list-style-type: none; padding-left: 28px; position: relative; margin: 0; }
+        .tree ul::before { content: ''; position: absolute; top: 0; bottom: 16px; left: 12px; width: 2px; background: var(--line-color); }
+        .tree li { margin: 10px 0; position: relative; }
+        .tree li::before { content: ''; position: absolute; top: 19px; left: -16px; width: 16px; height: 2px; background: var(--line-color); }
+
+        .node-box {
+            display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px;
+            background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .node-box:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(139, 38, 29, 0.12); }
+        .node-name { cursor: pointer; font-size: 0.96rem; font-weight: 700; }
+        .node-name:hover { color: var(--primary); text-decoration: underline; }
+
+        .toggle-btn {
+            width: 21px; height: 21px; border-radius: 4px; background: var(--primary-light);
+            color: var(--primary-dark); display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; cursor: pointer; font-weight: bold; border: 1px solid var(--border); transition: transform 0.2s;
+        }
+        .collapsed > ul { display: none !important; }
+        .collapsed > .node-box .toggle-btn { transform: rotate(-90deg); }
+
+        .action-btns { display: inline-flex; gap: 4px; margin-left: 4px; }
+        .action-btn {
+            padding: 2px 7px; border-radius: 4px; border: 1px solid var(--border);
+            background: var(--card-bg); color: var(--text); font-size: 0.73rem; cursor: pointer; font-weight: 600;
+        }
+        .action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .gen-badge { font-size: 0.68rem; padding: 2px 6px; border-radius: 4px; background: var(--primary-light); color: var(--primary-dark); font-weight: 700; border: 1px solid var(--border); }
+        .badge-note { background: #FEE2E2; color: #991B1B; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+
+        .root-box { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; font-weight: 800; border: 2px solid #FDE68A; font-size: 1.05rem; padding: 9px 18px; }
+        .root-box .gen-badge, .gen2-box .gen-badge { background: rgba(255,255,255,0.2); color: white; border: none; }
+        .gen2-box { background: linear-gradient(135deg, #9A3412, #B45309); color: white; font-weight: 700; border: none; }
+        .branch-box { background: #FEF3C7; border-color: #D97706; color: #78350F; font-weight: 800; }
+        .highlight { background: #FEF08A !important; color: #713F12 !important; border: 2px solid #CA8A04 !important; }
+
+        /* Top-Down Org Chart */
+        .org-tree-wrapper { overflow: auto; padding: 20px 8px; }
+        .org-tree ul { padding-top: 20px; position: relative; display: flex; justify-content: center; list-style: none; margin: 0; padding-left: 0; }
+        .org-tree li { float: left; text-align: center; list-style: none; position: relative; padding: 20px 5px 0 5px; }
+        .org-tree li::before, .org-tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid var(--line-color); width: 50%; height: 20px; }
+        .org-tree li::after { right: auto; left: 50%; border-left: 2px solid var(--line-color); }
+        .org-tree li:only-child::after, .org-tree li:only-child::before { display: none; }
+        .org-tree li:only-child { padding-top: 0; }
+        .org-tree li:first-child::before, .org-tree li:last-child::after { border: 0 none; }
+        .org-tree li:last-child::before { border-right: 2px solid var(--line-color); border-radius: 0 5px 0 0; }
+        .org-tree li:first-child::after { border-radius: 5px 0 0 0; }
+        .org-tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid var(--line-color); width: 0; height: 20px; }
+        .org-tree .node-box { flex-direction: column; gap: 3px; padding: 8px; min-width: 115px; }
+
+        #d3VizContainer { width: 100%; height: 600px; background: var(--card-bg); border-radius: 14px; border: 2px solid var(--border); position: relative; overflow: hidden; }
+        .viz-controls { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 10; }
+
+        .gen-row { background: var(--card-bg); border-radius: 14px; border: 1.5px solid var(--border); padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px; }
+        .gen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 6px; }
+        .gen-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+        .gen-count-badge { background: var(--primary-light); color: var(--primary-dark); padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+        .member-avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+        .avatar-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; display: flex; align-items: center; gap: 9px; cursor: pointer; transition: all 0.2s; }
+        .avatar-card:hover { border-color: var(--primary); background: var(--primary-light); }
+        .avatar-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .avatar-name { font-weight: 700; font-size: 0.9rem; }
+
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+        .chart-card, .admin-card, .about-card { background: var(--card-bg); border-radius: 14px; border: 1.5px solid var(--border); padding: 24px; box-shadow: var(--shadow); }
+        .admin-card, .about-card { max-width: 840px; margin: 0 auto; }
+        .bar-row { margin-bottom: 10px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 3px; }
+        .bar-track { width: 100%; height: 9px; background: var(--primary-light); border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; }
+
+        .code-box { width: 100%; font-family: monospace; font-size: 0.82rem; padding: 10px; border-radius: 8px; border: 1.5px dashed var(--primary); background: var(--bg); color: var(--text); word-break: break-all; margin: 8px 0; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: var(--card-bg); color: var(--text); border-radius: 14px; padding: 24px; width: 92%; max-width: 520px; max-height: 90vh; overflow-y: auto; position: relative; border: 2px solid var(--border); }
+        .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); cursor: pointer; font-weight: bold; }
+        .form-group { margin-bottom: 11px; }
+        .form-group label { display: block; font-size: 0.83rem; font-weight: 700; margin-bottom: 4px; color: var(--text-muted); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 9px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); border-radius: 7px; font-size: 0.9rem; }
+        .photo-preview { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid var(--primary); }
+        .lineage-breadcrumb { background: var(--primary-light); color: var(--primary-dark); padding: 8px 11px; border-radius: 7px; font-size: 0.8rem; font-weight: 600; margin-bottom: 12px; border: 1px solid var(--border); }
+
+        .guide-step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+        .guide-step-card { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; }
+        .guide-step-num { display: inline-block; background: var(--primary); color: white; width: 26px; height: 26px; border-radius: 50%; text-align: center; line-height: 26px; font-weight: 700; font-size: 0.82rem; margin-bottom: 6px; }
+
+        footer { text-align: center; margin-top: 30px; padding: 18px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
+
+        /* Print Media: Only print the chart cleanly */
+        @media print {
+            body * { visibility: hidden; }
+            #printableChartArea, #printableChartArea * { visibility: visible; }
+            #printableChartArea { position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 15px; }
+            .action-btns, .toggle-btn, .viz-controls { display: none !important; }
+            .collapsed > ul { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Status & Quick Guide Bar -->
+        <div class="mode-banner">
+            <span id="modeBadge" class="mode-badge mode-public">📜 पारिवारिक अभिलेख व्यू (Public Archive Mode - एडमिन स्वीकृति आवश्यक)</span>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn" onclick="openWelcomeGuide()">📖 पोर्टल कैसे उपयोग करें?</button>
+                <button class="btn" onclick="switchTab('admin')" id="quickAdminBtn">🔐 Admin Login</button>
+            </div>
+        </div>
+
+        <!-- Classic Heritage Header -->
+        <div class="header">
+            <div class="header-badge">📜 ऐतिहासिक वंशावली एवं पारिवारिक अभिलेख रजिस्टर 📜</div>
+            <h1 id="title-text">स्व. नारायण महतो का वंशावली</h1>
+            <div class="sub-tagline">हमारा परिवार, हमारा रजक समाज!</div>
+            <p id="location-text">📍 ग्राम/मोहल्ला: आशानगर, थाना- सोहसराय, बिहार शरीफ (नालंदा)</p>
+            <p style="font-size:0.82rem; opacity:0.9;">ℹ️ अपने पूर्वजों को खोजें, वंशावली देखें और नया नाम जोड़कर एडमिन (प्रिय अंकित रंजन जी - WhatsApp: +91 9430019427) को भेजें</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tab-tree" onclick="switchTab('tree')">🌳 मुख्य वंश वृक्ष (Main Tree)</button>
+            <button class="tab-btn" id="tab-other" onclick="switchTab('other')">🏘️ अन्य परिवार / समाज (Other Families)</button>
+            <button class="tab-btn" id="tab-radial" onclick="switchTab('radial')">☀️ चक्र आरेख (360° Chart)</button>
+            <button class="tab-btn" id="tab-roadmap" onclick="switchTab('roadmap')">🖼️ पीढ़ी रजिस्टर (Generations)</button>
+            <button class="tab-btn" id="tab-analytics" onclick="switchTab('analytics')">📊 कुल विश्लेषण (Analytics)</button>
+            <button class="tab-btn" id="tab-guide" onclick="switchTab('guide')">📖 उपयोग विधि (How to Use)</button>
+            <button class="tab-btn" id="tab-admin" onclick="switchTab('admin')">🔐 एडमिन पैनल (Admin)</button>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="stats-bar">
+            <div class="stat-card"><div class="stat-icon">👑</div><div><div class="stat-val" id="stat-total">236</div><div class="stat-lbl">कुल सदस्य (Total Members)</div></div></div>
+            <div class="stat-card"><div class="stat-icon">🌿</div><div><div class="stat-val">6</div><div class="stat-lbl">मुख्य शाखाएँ (Main Branches)</div></div></div>
+            <div class="stat-card"><div class="stat-icon">📜</div><div><div class="stat-val" id="stat-gens">9</div><div class="stat-lbl">पीढ़ियाँ (Generations)</div></div></div>
+            <div class="stat-card"><div class="stat-icon">🏘️</div><div><div class="stat-val" id="stat-other">0</div><div class="stat-lbl">अन्य समाज परिवार (Other Trees)</div></div></div>
+        </div>
+
+        <!-- Global Search & Print Studio Toolbar -->
+        <div class="top-toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="पूर्वज या परिवार के सदस्य का नाम यहाँ खोजें (Search ancestor name)..." oninput="filterTree()">
+            </div>
+            <div class="btn-group">
+                <select class="btn" onchange="changeTheme(this.value)">
+                    <option value="archive">📜 थीम: क्लासिक अभिलेख (Classic Record)</option>
+                    <option value="saffron">🎨 थीम: केसरिया (Saffron)</option>
+                    <option value="emerald">🌲 थीम: पन्ना हरित (Emerald)</option>
+                    <option value="dark">🌙 थीम: डार्क गोल्ड (Dark)</option>
+                </select>
+                <button class="btn btn-primary" onclick="toggleLanguage()" id="lang-btn">🌐 भाषा: हिन्दी</button>
+                <button class="btn btn-primary" onclick="openPrintStudio()">🖨️ प्रिंट / PDF स्टूडियो (Print Chart)</button>
+                <button class="btn btn-success" onclick="downloadUpdatedHTML()" id="downloadMasterBtn" style="display:none;">📥 मास्टर फाइल सेव करें</button>
+            </div>
+        </div>
+
+        <!-- TAB 1: MAIN FAMILY TREE -->
+        <div id="page-tree" style="display:block;">
+            <div class="branch-bar">
+                <button class="branch-pill active" onclick="filterByBranch('all', this)">🌟 संपूर्ण वंशावली (All 6 Branches)</button>
+                <button class="branch-pill" onclick="filterByBranch('b1', this)">1. मोहन महतो शाखा</button>
+                <button class="branch-pill" onclick="filterByBranch('b2', this)">2. लछु महतो शाखा</button>
+                <button class="branch-pill" onclick="filterByBranch('b3', this)">3. नेमचंद महतो शाखा</button>
+                <button class="branch-pill" onclick="filterByBranch('b4', this)">4. हुकुमचंद महतो शाखा</button>
+                <button class="branch-pill" onclick="filterByBranch('b5', this)">5. दिपचंद महतो शाखा</button>
+                <button class="branch-pill" onclick="filterByBranch('b6', this)">6. छोटू महतो शाखा</button>
+            </div>
+            <div class="diagram-mode-bar">
+                <div style="font-weight:700; color:var(--primary-dark);">📌 नाम पर क्लिक करके वंश-पथ देखें | ➕ बटन दबाकर नई संतान जोड़ें:</div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="btnLayoutList" onclick="setTreeLayout('list')">🗂️ अभिलेख सूची (Record Tree)</button>
+                    <button class="btn" id="btnLayoutOrg" onclick="setTreeLayout('org')">🏛️ लम्बवत चार्ट (Flowchart)</button>
+                    <button class="btn" onclick="expandAll()">📂 सभी शाखाएँ खोलें</button>
+                    <button class="btn" onclick="collapseAll()">📁 संक्षिप्त करें</button>
+                </div>
+            </div>
+            <div class="tree-card" id="mainTreeCard">
+                <div id="treeContainer"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: OTHER FAMILIES / SOCIETY MEMBERS (अन्य परिवार) -->
+        <div id="page-other" style="display:none;">
+            <div class="diagram-mode-bar">
+                <div>
+                    <strong>🏘️ अन्य परिवार एवं समाज खंड (Other Society Families):</strong> यहाँ आशानगर / समाज के अन्य परिवार अपना नया स्वतंत्र वंश-वृक्ष बना सकते हैं।
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="openNewFamilyModal()">➕ नया परिवार वृक्ष शुरू करें (Add New Family Tree)</button>
+                </div>
+            </div>
+            <div class="branch-bar" id="otherFamiliesPills"></div>
+            <div class="tree-card">
+                <div id="otherTreeContainer"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: RADIAL & D3 CHART -->
+        <div id="page-radial" style="display:none;">
+            <div class="diagram-mode-bar">
+                <div><strong>🌀 इंटरैक्टिव चक्र आरेख:</strong> माउस/उंगली से ज़ूम और ड्रैग करें। किसी भी नाम पर क्लिक करके विवरण देखें।</div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="btnD3Radial" onclick="renderD3Diagram('radial')">☀️ 360° सूर्य-चक्र</button>
+                    <button class="btn" id="btnD3Cluster" onclick="renderD3Diagram('horizontal')">🌿 क्षैतिज आरेख</button>
+                    <button class="btn" onclick="openPrintStudio()">🖨️ यह चार्ट प्रिंट / PDF करें</button>
+                </div>
+            </div>
+            <div id="d3VizContainer">
+                <div class="viz-controls">
+                    <button class="btn" onclick="zoomD3(1.25)">➕ Zoom In</button>
+                    <button class="btn" onclick="zoomD3(0.8)">➖ Zoom Out</button>
+                    <button class="btn" onclick="resetD3Zoom()">🎯 Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PICTORIAL ROADMAP -->
+        <div id="page-roadmap" style="display:none;"><div id="roadmapContainer"></div></div>
+
+        <!-- TAB 5: ANALYTICS -->
+        <div id="page-analytics" style="display:none;">
+            <div class="analytics-grid">
+                <div class="chart-card"><h3>📈 पीढ़ी अनुसार सदस्य संख्या</h3><div id="genChartContainer"></div></div>
+                <div class="chart-card"><h3>🌿 ६ मुख्य शाखाओं का विस्तार</h3><div id="branchChartContainer"></div></div>
+            </div>
+        </div>
+
+        <!-- TAB 6: HOW TO USE & ABOUT GUIDE -->
+        <div id="page-guide" style="display:none;">
+            <div class="about-card">
+                <h2 style="margin-top:0; color:var(--primary);">📖 इस वंशावली पोर्टल का उपयोग कैसे करें? (How to Use Guide)</h2>
+                <p>यह <strong>स्व. नारायण महतो</strong> (आशानगर, थाना- सोहसराय, बिहार शरीफ, नालंदा) एवं समाज का डिजिटल वंशावली अभिलेख है।</p>
+                
+                <div class="guide-step-grid">
+                    <div class="guide-step-card">
+                        <span class="guide-step-num">1</span>
+                        <strong>पूर्वज एवं अपना नाम खोजें:</strong>
+                        <p style="font-size:0.86rem; margin:6px 0 0;">ऊपर दिए गए <strong>🔍 Search Box</strong> में अपना या अपने पिता/दादाजी का नाम लिखें। वृक्ष अपने आप खुलकर पीले रंग में नाम दिखा देगा।</p>
+                    </div>
+                    <div class="guide-step-card">
+                        <span class="guide-step-num">2</span>
+                        <strong>वंश-पथ एवं विवरण देखें:</strong>
+                        <p style="font-size:0.86rem; margin:6px 0 0;">किसी भी नाम या <strong>ℹ️</strong> बटन पर क्लिक करने से मूल पुरुष से लेकर उस व्यक्ति तक का पूरा <strong>वंश-पथ (Lineage Path)</strong> दिख जाएगा।</p>
+                    </div>
+                    <div class="guide-step-card">
+                        <span class="guide-step-num">3</span>
+                        <strong>नया नाम जोड़ें (➕):</strong>
+                        <p style="font-size:0.86rem; margin:6px 0 0;">अपने पिता के नाम के आगे <strong>➕</strong> दबाएँ, नाम भरें और 1-Click में <strong>प्रिय अंकित रंजन जी (+91 9430019427)</strong> को WhatsApp पर अप्रूवल कोड भेजें।</p>
+                    </div>
+                    <div class="guide-step-card">
+                        <span class="guide-step-num">4</span>
+                        <strong>अन्य परिवार एवं PDF प्रिंट:</strong>
+                        <p style="font-size:0.86rem; margin:6px 0 0;">समाज के अन्य परिवार <strong>"🏘️ अन्य परिवार"</strong> टैब में अपना नया वृक्ष बना सकते हैं। <strong>🖨️ प्रिंट स्टूडियो</strong> से केवल चार्ट की PDF निकाल सकते हैं।</p>
+                    </div>
+                </div>
+
+                <div style="background:var(--primary-light); border-left:4px solid var(--primary); padding:14px 18px; border-radius:10px; margin-top:18px;">
+                    <h3 style="margin-top:0; color:var(--primary-dark);">📝 एडमिन संपर्क (प्रिय अंकित रंजन जी):</h3>
+                    <p style="margin:0 0 6px 0;">💬 <strong>WhatsApp:</strong> <a href="https://wa.me/919430019427" target="_blank" style="color:var(--primary-dark); font-weight:bold;">+91 9430019427</a></p>
+                    <p style="margin:0;">📧 <strong>Email:</strong> <a href="mailto:ankitranjan97@gmail.com" style="color:var(--primary-dark); font-weight:bold;">ankitranjan97@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: SECURE ADMIN PANEL (SHA-256 + WHATSAPP OTP PASSWORD CHANGE) -->
+        <div id="page-admin" style="display:none;">
+            <div class="admin-card">
+                <h2 style="margin-top:0; color:var(--primary);">🔐 सुरक्षित एडमिन कंट्रोल पैनल (SHA-256 Encrypted Admin)</h2>
+                
+                <div id="adminLoginSection">
+                    <p>यह पैनल केवल एडमिन (<strong>प्रिय अंकित रंजन जी</strong>) के लिए सुरक्षित है। पासवर्ड SHA-256 एन्क्रिप्शन द्वारा सुरक्षित है।</p>
+                    <div class="form-group" style="max-width:320px;">
+                        <label>एडमिन पासवर्ड / पिन दर्ज करें:</label>
+                        <input type="password" id="adminPinInput" placeholder="••••">
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="btn btn-primary" onclick="unlockAdminMode()">🔓 लॉगिन करें (Unlock Admin)</button>
+                        <button class="btn" onclick="toggleOtpResetBox()">📲 WhatsApp OTP से पासवर्ड बदलें</button>
+                    </div>
+
+                    <!-- WhatsApp OTP Password Reset Flow -->
+                    <div id="otpResetSection" style="display:none; margin-top:18px; padding:16px; background:var(--primary-light); border-radius:10px; border:1px solid var(--border);">
+                        <h4 style="margin-top:0; color:var(--primary-dark);">📲 WhatsApp OTP द्वारा एडमिन पासवर्ड बदलें</h4>
+                        <p style="font-size:0.85rem;">नीचे बटन दबाने पर आपके पंजीकृत WhatsApp नंबर (<strong>+91 9430019427</strong>) के लिए 6-अंकों का OTP जनरेट होगा:</p>
+                        <button class="btn btn-whatsapp" onclick="sendAdminOtpToWhatsapp()">💬 1. WhatsApp (+91 9430019427) पर OTP भेजें</button>
+                        <div id="otpVerifyInputs" style="display:none; margin-top:12px;">
+                            <div class="form-group">
+                                <label>WhatsApp पर प्राप्त 6-अंकों का OTP दर्ज करें:</label>
+                                <input type="text" id="inputOtpCode" placeholder="उदा: 482910">
+                            </div>
+                            <div class="form-group">
+                                <label>नया एडमिन पिन / पासवर्ड सेट करें (New Admin PIN):</label>
+                                <input type="password" id="inputNewAdminPin" placeholder="नया पिन लिखें">
+                            </div>
+                            <button class="btn btn-success" onclick="verifyOtpAndChangePin()">✅ OTP सत्यापित करें और पासवर्ड बदलें</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unlocked Admin Dashboard -->
+                <div id="adminDashboardSection" style="display:none;">
+                    <div style="background:#DCFCE7; color:#166534; padding:12px; border-radius:10px; margin-bottom:18px; font-weight:600; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <span>✅ एडमिन मोड सक्रिय है! आप सीधे संशोधन कर सकते हैं या अप्रूवल कोड स्वीकार कर सकते हैं।</span>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn" onclick="toggleOtpResetBox()">🔑 पासवर्ड बदलें</button>
+                            <button class="btn" onclick="lockAdminMode()">🔒 लॉगआउट</button>
+                        </div>
+                    </div>
+
+                    <h3>📥 1. WhatsApp (+91 9430019427) से प्राप्त अप्रूवल कोड यहाँ पेस्ट करें:</h3>
+                    <textarea id="approvalCodeInput" rows="3" class="code-box" placeholder="यहाँ VANSH-... से शुरू होने वाला कोड पेस्ट करें"></textarea>
+                    <button class="btn btn-primary" onclick="previewApprovalCode()">🔍 कोड जाँचें (Preview Request)</button>
+                    
+                    <div id="approvalPreviewBox" style="display:none; background:var(--primary-light); padding:14px; border-radius:10px; border:1px solid var(--primary); margin-top:14px;">
+                        <h4 style="margin-top:0; color:var(--primary-dark);">📋 अनुरोध का विवरण:</h4>
+                        <div id="approvalPreviewContent" style="font-size:0.92rem; margin-bottom:12px;"></div>
+                        <button class="btn btn-success" onclick="applyApprovedRequest()">✅ स्वीकार करें और वंशावली में जोड़ें</button>
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid var(--border); margin:20px 0;">
+                    <h3>💾 2. अपडेटेड मास्टर फाइल डाउनलोड करें (Save Master HTML):</h3>
+                    <p style="font-size:0.86rem; color:var(--text-muted);">यह फाइल आपके नए पासवर्ड हैश और सभी नए सदस्यों के डेटा के साथ सेव होगी:</p>
+                    <button class="btn btn-success" style="font-size:0.95rem; padding:11px 20px;" onclick="downloadUpdatedHTML()">📥 अपडेटेड मास्टर index.html डाउनलोड करें</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© वंशावली अभिलेख रजिस्टर | आशानगर, सोहसराय, बिहार शरीफ (नालंदा) • एडमिन (प्रिय अंकित रंजन जी): +91 9430019427</p>
+        </footer>
+    </div>
+
+    <!-- Hidden Printable Area for Chart-Only Print & PDF -->
+    <div id="printableChartArea" style="display:none;"></div>
+
+    <!-- MODAL 1: PHOTOSHOP-STYLE PRINT & PDF EXPORT STUDIO -->
+    <div class="modal-overlay" id="printStudioModal">
+        <div class="modal" style="max-width:560px;">
+            <button class="modal-close-btn" onclick="closeModal('printStudioModal')">✖</button>
+            <h3 style="margin-top:0; color:var(--primary);">🖨️ प्रिंट एवं PDF स्टूडियो (Chart Print & Export Studio)</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">यहाँ से केवल आपका <strong>वंश-वृक्ष चार्ट (Chart Only)</strong> चुना गया पेपर आकार में प्रिंट या PDF के रूप में सेव होगा (पूरे वेबपेज के बटन या फालतू हिस्से नहीं आएंगे):</p>
+            
+            <div class="form-group">
+                <label>1. कौन-सा चार्ट एक्सपोर्ट करना चाहते हैं? (Select Target Chart):</label>
+                <select id="printTargetSelect">
+                    <option value="current">📌 वर्तमान खुला हुआ वंश-वृक्ष (Current Active Tree View)</option>
+                    <option value="full_expanded">🌳 संपूर्ण विस्तृत वंश-वृक्ष (All Branches Expanded)</option>
+                    <option value="radial_svg">☀️ 360° चक्र आरेख (Radial Sunburst Diagram)</option>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>2. पेपर का आकार (Paper Size):</label>
+                    <select id="printPaperSize">
+                        <option value="a4">A4 (Standard Sheet - 210 × 297 mm)</option>
+                        <option value="a3" selected>A3 (Large Chart - 297 × 420 mm)</option>
+                        <option value="a2">A2 (Poster Size - 420 × 594 mm)</option>
+                        <option value="a1">A1 (Banner Chart - 594 × 841 mm)</option>
+                        <option value="legal">Legal (216 × 356 mm)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>3. पेज की दिशा (Orientation):</label>
+                    <select id="printOrientation">
+                        <option value="landscape" selected>↔️ चौड़ा (Landscape - वंशावली के लिए उत्तम)</option>
+                        <option value="portrait">↕️ लम्बवत (Portrait)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>4. चार्ट शीर्षक (Header Title on Chart):</label>
+                <input type="text" id="printCustomTitle" value="स्व. नारायण महतो का वंशावली - आशानगर, बिहार शरीफ (नालंदा)">
+            </div>
+
+            <div style="background:var(--primary-light); padding:12px; border-radius:8px; border:1px solid var(--border); margin-top:14px; display:flex; flex-direction:column; gap:10px;">
+                <button class="btn btn-primary" style="justify-content:center; padding:11px; font-size:0.95rem;" onclick="exportChartAsPDF()" id="btnExportPdf">
+                    📄 केवल चार्ट को .PDF में सेव करें (Save Chart Only as .PDF)
+                </button>
+                <button class="btn btn-success" style="justify-content:center; padding:11px; font-size:0.95rem;" onclick="exportChartAsImage()">
+                    🖼️ हाई-क्वालिटी इमेज (.PNG Poster) डाउनलोड करें
+                </button>
+                <button class="btn" style="justify-content:center; padding:10px;" onclick="triggerCleanSystemPrint()">
+                    🖨️ सीधे प्रिंटर से केवल चार्ट प्रिंट करें (Direct Chart Print)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: FIRST-TIME WELCOME GUIDE POPUP -->
+    <div class="modal-overlay" id="welcomeGuideModal">
+        <div class="modal" style="max-width:560px;">
+            <button class="modal-close-btn" onclick="dismissWelcomeGuide()">✖</button>
+            <div style="text-align:center; margin-bottom:10px;">
+                <span style="font-size:2.2rem;">🙏</span>
+                <h3 style="margin:4px 0; color:var(--primary);">स्व. नारायण महतो वंशावली पोर्टल में आपका स्वागत है!</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">आशानगर, सोहसराय, बिहार शरीफ (नालंदा) का डिजिटल पारिवारिक अभिलेख</p>
+            </div>
+            <div style="background:var(--primary-light); padding:14px; border-radius:10px; border:1px solid var(--border); font-size:0.88rem; line-height:1.7;">
+                <div>✅ <strong>पूर्वज खोजें:</strong> ऊपर <strong>🔍 Search</strong> बॉक्स में अपना या अपने पूर्वज का नाम लिखें।</div>
+                <div>✅ <strong>शाखा खोलें:</strong> किसी भी नाम के आगे <strong>▼</strong> बटन दबाकर आगे की पीढ़ियाँ देखें।</div>
+                <div>✅ <strong>वंश-पथ देखें:</strong> नाम पर क्लिक करके मूल पुरुष से अपने तक का पूरा रिश्ता (Lineage) देखें।</div>
+                <div>✅ <strong>नया नाम जोड़ें:</strong> नाम के आगे <strong>➕</strong> दबाकर अपनी संतान का नाम जोड़ें और <strong>प्रिय अंकित रंजन जी</strong> को WhatsApp पर अप्रूवल भेजें।</div>
+                <div>✅ <strong>अन्य परिवार:</strong> समाज के अन्य परिवार <strong>"🏘️ अन्य परिवार"</strong> टैब में अपना नया वंश-वृक्ष बना सकते हैं।</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="chkDontShowAgain" checked> अगली बार यह गाइड स्वतः न दिखाएँ
+                </label>
+                <button class="btn btn-primary" onclick="dismissWelcomeGuide()">👍 समझ गया, वंशावली देखें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD / EDIT MEMBER -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close-btn" onclick="closeModal('modalOverlay')">✖</button>
+            <h3 id="modalTitle">नई पीढ़ी / संतान जोड़ें</h3>
+            <div class="form-group"><label>नाम (हिन्दी में) *:</label><input type="text" id="inputHiName" placeholder="उदा: अक्षत रंजन"></div>
+            <div class="form-group"><label>Name (in English) *:</label><input type="text" id="inputEnName" placeholder="e.g. Akshat Ranjan"></div>
+            <div class="form-group" id="requesterBox"><label>निवेदक का नाम / मोबाइल (Your Name & Phone):</label><input type="text" id="inputRequester" placeholder="अपना नाम और मोबाइल नंबर लिखें"></div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+                <button class="btn" onclick="closeModal('modalOverlay')">रद्द करें</button>
+                <button class="btn btn-primary" id="saveModalBtn" onclick="saveNameModal()">सहेजें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: START NEW OTHER FAMILY TREE (अन्य परिवार जोड़ें) -->
+    <div class="modal-overlay" id="newFamilyModal">
+        <div class="modal">
+            <button class="modal-close-btn" onclick="closeModal('newFamilyModal')">✖</button>
+            <h3 style="margin-top:0; color:var(--primary);">🏘️ समाज का नया परिवार वृक्ष शुरू करें (अन्य)</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">यहाँ आशानगर या समाज के अन्य परिवार अपने मूल पूर्वज (Root Ancestor) के नाम से नया स्वतंत्र वंश-वृक्ष बना सकते हैं:</p>
+            <div class="form-group"><label>मूल पूर्वज / परिवार प्रमुख का नाम (हिन्दी में) *:</label><input type="text" id="otherRootHi" placeholder="उदा: स्व. रामस्वरूप रजक"></div>
+            <div class="form-group"><label>Root Ancestor Name (in English) *:</label><input type="text" id="otherRootEn" placeholder="e.g. Late Ramswaroop Rajak"></div>
+            <div class="form-group"><label>मोहल्ला / मूल स्थान (Location / Gotra / Note):</label><input type="text" id="otherRootNote" placeholder="उदा: आशानगर, बिहार शरीफ"></div>
+            <div class="form-group"><label>निवेदक का नाम एवं मोबाइल नंबर *:</label><input type="text" id="otherRequester" placeholder="अपना नाम और मोबाइल नंबर"></div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+                <button class="btn" onclick="closeModal('newFamilyModal')">रद्द करें</button>
+                <button class="btn btn-primary" onclick="saveNewOtherFamily()">✅ नया वंश-वृक्ष बनाएँ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: MEMBER PERSONAL INFO -->
+    <div class="modal-overlay" id="infoModalOverlay">
+        <div class="modal">
+            <button class="modal-close-btn" onclick="closeModal('infoModalOverlay')">✖</button>
+            <h3 id="infoModalTitle">व्यक्तिगत जानकारी</h3>
+            <div id="lineagePathBox" class="lineage-breadcrumb"></div>
+            <img id="infoPhotoPreview" class="photo-preview" src="" alt="Photo">
+            <div class="form-group"><label>फोटो यूआरएल (Photo URL):</label><input type="text" id="inputPhotoUrl" placeholder="https://..." oninput="updatePhotoPreview()"></div>
+            <div class="form-group"><label>पत्नी का नाम (Spouse Name):</label><input type="text" id="inputWifeName"></div>
+            <div class="form-group"><label>जन्म तिथि (DOB):</label><input type="text" id="inputDob" placeholder="DD/MM/YYYY"></div>
+            <div class="form-group"><label>मृत्यु तिथि (DOD - यदि लागू हो):</label><input type="text" id="inputDod" placeholder="DD/MM/YYYY"></div>
+            <div class="form-group"><label>अन्य विवरण (Notes):</label><textarea id="inputNotes" rows="2"></textarea></div>
+            <div style="display:flex; justify-content:space-between; margin-top:16px;">
+                <button class="btn" onclick="openAddFromInfo()">➕ संतान जोड़ें</button>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn" onclick="closeModal('infoModalOverlay')">बंद करें</button>
+                    <button class="btn btn-primary" onclick="saveInfoModal()">अपडेट करें</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: WHATSAPP APPROVAL TICKET (प्रिय अंकित रंजन जी) -->
+    <div class="modal-overlay" id="approvalTicketModal">
+        <div class="modal">
+            <button class="modal-close-btn" onclick="closeModal('approvalTicketModal')">✖</button>
+            <h3 style="color:var(--primary); margin-top:0;">✅ एडमिन अप्रूवल कोड तैयार है!</h3>
+            <p style="font-size:0.88rem;">नीचे दिए गए हरे बटन पर क्लिक करके यह कोड सीधे एडमिन (<strong>प्रिय अंकित रंजन जी - +91 9430019427</strong>) के WhatsApp पर भेजें:</p>
+            <textarea id="generatedTokenBox" rows="3" class="code-box" readonly></textarea>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+                <a id="whatsappShareLink" target="_blank" class="btn btn-whatsapp" style="justify-content:center; padding:11px; font-size:0.92rem;">💬 1-Click: WhatsApp (+91 9430019427) पर भेजें</a>
+                <a id="emailShareLink" class="btn btn-primary" style="justify-content:center; padding:11px; font-size:0.92rem;">📧 1-Click: Email पर भेजें</a>
+                <button class="btn" onclick="copyApprovalToken()" style="justify-content:center;">📋 कोड कॉपी करें</button>
+            </div>
+        </div>
+    </div>
+
+<!-- PASTE PART 2 BELOW THIS LINE -->
+<script>
+        // ============================================================================
+        // 🔐 HACKER-PROOF SHA-256 ADMIN SECURITY & WHATSAPP SETTINGS
+        // (Plaintext password is NEVER stored in code; only its SHA-256 cryptographic hash)
+        // ============================================================================
+        let ADMIN_PIN_SHA256 = "f6f2ea8f45d8a057c9566a33f99474da2e5c6a6604d736121650e2730c6fb0a3";
+        const ADMIN_WHATSAPP_NUMBER = "919430019427";
+        const ADMIN_EMAIL = "ankitranjan97@gmail.com";
+
+        // Pure JS SHA-256 implementation (works offline & online on file:// and https://)
+        function sha256(ascii) {
+            function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+            var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '';
+            var words = [], asciiBitLength = ascii[lengthProperty] * 8;
+            var hash = sha256.h = sha256.h || [], k = sha256.k = sha256.k || [], primeCounter = k[lengthProperty];
+            var isComposite = {};
+            for (var candidate = 2; primeCounter < 64; candidate++) {
+                if (!isComposite[candidate]) {
+                    for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+                    hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+                    k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+                }
+            }
+            ascii += '\x80';
+            while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+            for (i = 0; i < ascii[lengthProperty]; i++) {
+                j = ascii.charCodeAt(i);
+                if (j >> 8) return;
+                words[i >> 2] |= j << ((3 - i % 4) * 8);
+            }
+            words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+            words[words[lengthProperty]] = (asciiBitLength);
+            for (j = 0; j < words[lengthProperty];) {
+                var w = words.slice(j, j += 16), oldHash = hash;
+                hash = hash.slice(0, 8);
+                for (i = 0; i < 64; i++) {
+                    var i2 = i + j, w15 = w[i - 15], w2 = w[i - 2];
+                    var a = hash[0], e = hash[4];
+                    var temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ ((~e) & hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
+                    var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+                    hash = [(temp1 + temp2) | 0].concat(hash);
+                    hash[4] = (hash[4] + temp1) | 0;
+                }
+                for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+            }
+            for (i = 0; i < 8; i++) {
+                for (j = 3; j + 1; j--) {
+                    var b = (hash[i] >> (j * 8)) & 255;
+                    result += ((b < 16) ? 0 : '') + b.toString(16);
+                }
+            }
+            return result;
+        }
+
+        // Latest 236-Member Family Dataset
+        const initialTreeData = {"id":"root","name_hi":"स्व. नारायण महतो","name_en":"Late Narayan Mahto","role_hi":"मूल पुरुष","role_en":"Root Ancestor","gen":1,"children":[{"id":"chaman","name_hi":"स्व. चमन महतो","name_en":"Late Chaman Mahto","role_hi":"२री पीढ़ी","role_en":"2nd Generation","gen":2,"children":[{"id":"b1","name_hi":"1. मोहन महतो","name_en":"1. Mohan Mahto","branch_id":1,"gen":3,"children":[{"id":"b1_1","name_hi":"झरी महतो","name_en":"Jhari Mahto","note_hi":"पुत्रहीन","note_en":"Childless","gen":4},{"id":"b1_2","name_hi":"नुन्नु महतो उर्फ़ पोखन","name_en":"Nunnu Mahto alias Pokhan","gen":4,"children":[{"id":"b1_2_1","name_hi":"बुन्दी लाल","name_en":"Bundi Lal","gen":5,"children":[{"id":"m_1785852666375","name_hi":"विजय कुमार","name_en":"Vijay kumar","gen":6},{"id":"m_1785852747992","name_hi":"विनय कुमार","name_en":"Vinay kumar","gen":6}]},{"id":"b1_2_2","name_hi":"पारस महतो","name_en":"Paras Mahto","gen":5},{"id":"b1_2_3","name_hi":"माधव प्रसाद","name_en":"Madhav Prasad","gen":5,"children":[{"id":"m_1785852826545","name_hi":"अजय कुमार (टीटू)","name_en":"Ajay kumar (Tittu)","gen":6},{"id":"m_1785852866285","name_hi":"गुड्डू राज","name_en":"Guddu raj","gen":6},{"id":"m_1785852891766","name_hi":"बप्पी राज","name_en":"Bappi raj","gen":6}]}]},{"id":"b1_3","name_hi":"बोधि महतो","name_en":"Bodhi Mahto","gen":4,"children":[{"id":"b1_3_1","name_hi":"हरिहर महतो","name_en":"Harihar Mahto","gen":5},{"id":"b1_3_2","name_hi":"केशर महतो","name_en":"Keshar Mahto","gen":5},{"id":"b1_3_3","name_hi":"किशोरी महतो","name_en":"Kishori Mahto","gen":5}]},{"id":"b1_4","name_hi":"बिहारी महतो","name_en":"Bihari Mahto","gen":4,"children":[{"id":"b1_4_1","name_hi":"भुप नारायण महतो","name_en":"Bhup Narayan Mahto","gen":5},{"id":"b1_4_2","name_hi":"महादेव महतो","name_en":"Mahadev Mahto","gen":5},{"id":"b1_4_3","name_hi":"डोमन महतो","name_en":"Doman Mahto","gen":5,"children":[{"id":"m_1785853002944","name_hi":"छोटे लाल","name_en":"Chhote laal","gen":6},{"id":"m_1785853029218","name_hi":"कृष्ण कुमार","name_en":"Krishna kumar","gen":6}]},{"id":"b1_4_4","name_hi":"गोविन्द महतो","name_en":"Govind Mahto","gen":5,"children":[{"id":"m_1785853079187","name_hi":"चुन्नी लाल","name_en":"Chunni laal","gen":6},{"id":"m_1785853100318","name_hi":"मोती लाल","name_en":"Moti laal","gen":6}]}]}]},{"id":"b2","name_hi":"2. लछु महतो","name_en":"2. Lachhu Mahto","branch_id":2,"gen":3,"children":[{"id":"b2_1","name_hi":"दिलचंद महतो","name_en":"Dilchand Mahto","gen":4,"children":[{"id":"b2_1_1","name_hi":"रोही महतो","name_en":"Rohi Mahto","gen":5,"children":[{"id":"m_1785853190999","name_hi":"चंद्रिका महतो","name_en":"Chandrika mahto","gen":6,"children":[{"id":"m_1785853266486","name_hi":"अजीत कुमार","name_en":"Ajit Kumar","gen":7},{"id":"m_1785853292842","name_hi":"बिपिन कुमार","name_en":"Bipin kumar","gen":7}]},{"id":"m_1785853233535","name_hi":"अमिरका महतो","name_en":"Amirka mahto","gen":6,"children":[{"id":"m_1785853339175","name_hi":"सुभाष कुमार","name_en":"Subhash kumar","gen":7},{"id":"m_1785853362777","name_hi":"उमेश कुमार","name_en":"Umesh kumar","gen":7},{"id":"m_1785853413283","name_hi":"गोरका","name_en":"Gorka","gen":7},{"id":"m_1785853492175","name_hi":"दिनेश कुमार (केसी पाल)","name_en":"Dinesh kumar (kesi paal)","gen":7}]}]},{"id":"b2_1_2","name_hi":"कुल्लू महतो","name_en":"Kullu Mahto","gen":5,"children":[{"id":"m_1785853567720","name_hi":"यदुनंदन प्रसाद","name_en":"Yadunandan prasad","gen":6},{"id":"m_1785853609415","name_hi":"आनन्दी प्रसाद","name_en":"Anandi prasad","gen":6,"children":[{"id":"m_1785853718757","name_hi":"कर्ण कुमार","name_en":"Karn kumar","gen":7,"children":[{"id":"m_1785853930698","name_hi":"निशु कुमार","name_en":"Nishu kumar","gen":8}]},{"id":"m_1785853741986","name_hi":"नवीन कुमार","name_en":"Navin Kumar","gen":7,"children":[{"id":"m_1785854001094","name_hi":"अभिमन्यु कुमार (चिक्कू)","name_en":"Abhimanu kumar (Chikku)","gen":8},{"id":"m_1785854044932","name_hi":"मिक्कू","name_en":"Mikku","gen":8}]},{"id":"m_1785853800884","name_hi":"संजय कुमार","name_en":"Sanjay kumar","gen":7},{"id":"m_1785853878681","name_hi":"शत्रुधन कुमार","name_en":"Satrudhan kumar","gen":7}]},{"id":"m_1785853672260","name_hi":"राजेंद्र प्रसाद (राजो)","name_en":"Rajendra prasad (Raajo)","gen":6}]}]},{"id":"b2_2","name_hi":"लेखा महतो","name_en":"Lekha Mahto","gen":4,"children":[{"id":"b2_2_1","name_hi":"जिछु महतो","name_en":"Jichhu Mahto","gen":5,"children":[{"id":"m_1785854113219","name_hi":"हरि महतो","name_en":"Hari mahto","gen":6,"children":[{"id":"m_1785854339555","name_hi":"हीरा लाल","name_en":"Hira laal","gen":7,"children":[{"id":"m_1785854440487","name_hi":"जीवन लाल","name_en":"Jivan laal","gen":8,"children":[{"id":"m_1785858403147","name_hi":"अमन कुमार","name_en":"Aman Kumar","gen":9}]}]},{"id":"m_1785854406250","name_hi":"जय प्रकाश रजक","name_en":"Jay prakash rajak","gen":7,"children":[{"id":"m_1785854496160","name_hi":"इन्द्रसेन कुमार (चंदन)","name_en":"Indrasen kumar (Chandan)","gen":8}]}]},{"id":"m_1785854156401","name_hi":"चंद्र महतो","name_en":"Chandr mahto","gen":6,"children":[{"id":"m_1785854611788","name_hi":"नवल किशोर","name_en":"Naval kishore","gen":7},{"id":"m_1785854652205","name_hi":"अरुण रजक","name_en":"Arun rajak","gen":7,"children":[{"id":"m_1785854827711","name_hi":"गोविन्द कुमार","name_en":"Govind kumar","gen":8}]},{"id":"m_1785854720638","name_hi":"सरयुग कुमार","name_en":"Saryug kumar","gen":7,"children":[{"id":"m_1785854857444","name_hi":"केतन कुमार","name_en":"Ketan kumar","gen":8}]},{"id":"m_1785854745816","name_hi":"संजय कुमार","name_en":"Sanjay kumar","gen":7},{"id":"m_1785854783457","name_hi":"स्व. उपेंद्र कुमार","name_en":"Late Upendra Kumar","gen":7}]},{"id":"m_1785854235430","name_hi":"रामचरण महतो (टेनी)","name_en":"Ramcharan mahto (Tenni)","gen":6,"children":[{"id":"m_1785854922750","name_hi":"महिरचंद्र प्रसाद","name_en":"Mahirchandra prasad","gen":7,"children":[{"id":"m_1785855125057","name_hi":"प्रभाकर कुमार","name_en":"Prabhakar kumar","gen":8},{"id":"m_1785855156483","name_hi":"दिवाकर कुमार","name_en":"Divakar kumar","gen":8},{"id":"m_1785855189123","name_hi":"सुधाकर कुमार","name_en":"Sudhakar kumar","gen":8}]},{"id":"m_1785854983180","name_hi":"स्व. सच्चितानंद कुमार","name_en":"Late Sachitanand kumar","gen":7,"children":[{"id":"m_1785855222230","name_hi":"सूरज कुमार","name_en":"Suraj kumar","gen":8},{"id":"m_1785855253295","name_hi":"सुधांशु कुमार","name_en":"Sudhanshu Kumar","gen":8}]},{"id":"m_1785855054937","name_hi":"परमानन्द कुमार (गोरका)","name_en":"Parmmanand kumar (Gorka)","gen":7,"children":[{"id":"m_1785855301333","name_hi":"नीतीश कुमार","name_en":"Nitish kumar","gen":8}]}]},{"id":"m_1785854304025","name_hi":"रामू महतो (फन्नू)","name_en":"Ramu mahto (Fannuu)","gen":6,"children":[{"id":"m_1785855358985","name_hi":"ताराचन्द कुमार","name_en":"Tarachand kumar","gen":7},{"id":"m_1785855385769","name_hi":"संतोष कुमार","name_en":"Santosh kumar","gen":7,"children":[{"id":"m_1785855425515","name_hi":"रोहित कुमार","name_en":"Rohit Kumar","gen":8}]}]}]}]},{"id":"b2_3","name_hi":"नारजित महतो","name_en":"Narjit Mahto","gen":4,"children":[{"id":"b2_3_1","name_hi":"मंगु महतो","name_en":"Mangu Mahto","gen":5,"children":[{"id":"m_1785818901912","name_hi":"इश्री लाल","name_en":"Ishri laal","gen":6}]}]}]},{"id":"b3","name_hi":"3. नेमचंद महतो","name_en":"3. Nemchand Mahto","branch_id":3,"gen":3,"children":[{"id":"b3_2","name_hi":"आलम महतो","name_en":"Alam Mahto","gen":4,"children":[{"id":"b3_2_1","name_hi":"बाबु लाल महतो","name_en":"Babu Lal Mahto","gen":5,"children":[{"id":"m_1785858854981","name_hi":"नवीन कुमार","name_en":"Navin Kumar","gen":6},{"id":"m_1785858902252","name_hi":"गिरीश प्रसाद","name_en":"Girish prasad","gen":6,"children":[{"id":"m_1785859046042","name_hi":"सुजल कुमार","name_en":"Sujal kumar","gen":7}]},{"id":"m_1785858943337","name_hi":"स्व. भोला प्रसाद","name_en":"Late Bhola Prasad","gen":6},{"id":"m_1785859009345","name_hi":"शिव कुमार (शिबू)","name_en":"Shiv Kumar (Shibu)","gen":6}]}]},{"id":"b3_3","name_hi":"किशुन महतो","name_en":"Kishun Mahto","gen":4,"children":[{"id":"b3_3_1","name_hi":"यदु महतो","name_en":"Yadu Mahto","gen":5},{"id":"b3_3_2","name_hi":"लाला महतो","name_en":"Lala Mahto","gen":5},{"id":"b3_3_3","name_hi":"योगेश्वर महतो","name_en":"Yogeshwar Mahto","gen":5},{"id":"b3_3_4","name_hi":"अयोध्या महतो","name_en":"Ayodhya Mahto","gen":5,"children":[{"id":"m_1785859141797","name_hi":"दया नन्द प्रसाद","name_en":"Daya nand Prasad","gen":6},{"id":"m_1785859188752","name_hi":"सुरेंद्र प्रसाद","name_en":"Surendra prasad","gen":6},{"id":"m_1785859233856","name_hi":"शारदानंद कुमार","name_en":"Sardanand kumar","gen":6,"children":[{"id":"m_1785859386906","name_hi":"बब्लू कुमार","name_en":"Bablu kumar","gen":7},{"id":"m_1785859413322","name_hi":"डब्लू कुमार","name_en":"Dablu kumar","gen":7}]},{"id":"m_1785859262637","name_hi":"पटेल कुमार","name_en":"Patel Kumar","gen":6},{"id":"m_1785859285656","name_hi":"अनिल कुमार","name_en":"Anil kumar","gen":6},{"id":"m_1785859317622","name_hi":"शांता राम","name_en":"Shanta Ram","gen":6,"children":[{"id":"m_1785859437255","name_hi":"मोंटी","name_en":"Monti","gen":7},{"id":"m_1785859459291","name_hi":"सोंटी","name_en":"Sonti","gen":7}]},{"id":"m_1785859343175","name_hi":"संजीव कुमार","name_en":"Sanjeev Kumar","gen":6}]}]},{"id":"b3_4","name_hi":"फग्गू महतो","name_en":"Phaggu Mahto","gen":4,"children":[{"id":"b3_4_1","name_hi":"रघु महतो","name_en":"Raghu Mahto","gen":5}]}]},{"id":"b4","name_hi":"4. हुकुमचंद महतो","name_en":"4. Hukumchand Mahto","branch_id":4,"gen":3,"children":[{"id":"b4_1","name_hi":"भत्तु महतो","name_en":"Bhattu Mahto","gen":4,"children":[{"id":"b4_1_1","name_hi":"गोपी महतो","name_en":"Gopi Mahto","gen":5,"notes":"बेटी का नाम:- रामरती देवी"},{"id":"b4_1_2","name_hi":"हिरामण महतो","name_en":"Hiraman Mahto","gen":5,"notes":"बेटी का नाम:- कलावती देवी (कालो)"},{"id":"b4_1_3","name_hi":"रमण महतो","name_en":"Raman Mahto","gen":5,"children":[{"id":"m_1785829375689","name_hi":"होरिल प्रसाद","name_en":"Horil prasad","gen":6,"children":[{"id":"m_1785829413634","name_hi":"प्रभंजन कुमार","name_en":"Prabhanjan kumar","gen":7},{"id":"m_1785829444317","name_hi":"प्रणव कुमार","name_en":"Pranav kumar","gen":7}]}]}]},{"id":"b4_2","name_hi":"जेहल महतो","name_en":"Jehal Mahto","gen":4,"children":[{"id":"b4_2_1","name_hi":"चोबा महतो","name_en":"Choba Mahto","gen":5,"children":[{"id":"m_1785829495536","name_hi":"प्रसादी महतो","name_en":"Prasadi mahto","gen":6,"children":[{"id":"m_1785829606661","name_hi":"राजेश्वरी प्रसाद","name_en":"Rajeshwari prasad","gen":7,"children":[{"id":"m_1785829727836","name_hi":"संजय कुमार","name_en":"Sanjay kumar","gen":8},{"id":"m_1785829765493","name_hi":"धर्मेंद्र कुमार","name_en":"Dharmendar kumar","gen":8},{"id":"m_1785829797084","name_hi":"सागर कुमार","name_en":"Sagar kumar","gen":8}]},{"id":"m_1785829643379","name_hi":"मोती लाल","name_en":"Moti laal","gen":7,"children":[{"id":"m_1785855564942","name_hi":"लड्डू कुमार","name_en":"Laddu kumar","gen":8}]}]},{"id":"m_1785829566210","name_hi":"शिवनंदन प्रसाद","name_en":"Shivnandan prasad","gen":6,"children":[{"id":"m_1785829850174","name_hi":"कंचन कुमार","name_en":"Kanchan kumar","gen":7,"children":[{"id":"m_1785829968941","name_hi":"किसलय कुमार","name_en":"Kislay kumar","gen":8}]},{"id":"m_1785829877361","name_hi":"कुंडल कुमार","name_en":"Kundal kumar","gen":7,"children":[{"id":"m_1785830002766","name_hi":"कुंज कुमार","name_en":"Kunj kumar","gen":8}]},{"id":"m_1785829904378","name_hi":"कुंचित कुमार","name_en":"Kunchit kumar","gen":7},{"id":"m_1785829931929","name_hi":"केशव कुमार","name_en":"Keshav kumar","gen":7}]}]}]},{"id":"b4_3","name_hi":"भिखारी महतो","name_en":"Bhikhari Mahto","gen":4,"children":[{"id":"b4_3_1","name_hi":"वेदु महतो","name_en":"Vedu Mahto","gen":5,"children":[{"id":"m_1785815922110","name_hi":"सीताराम प्रसाद","name_en":"Sitaram prasad","gen":6,"wife_name":"Kanti devi"},{"id":"m_1785816014337","name_hi":"नरेश रजक","name_en":"Naresh rajak","gen":6,"wife_name":"Fulo devi","dod":"2005-03-22","children":[{"id":"m_1785816382170","name_hi":"मनोज कुमार","name_en":"Manoj kumar","gen":7,"wife_name":"Dharamshila kumari","children":[{"id":"m_1785816597232","name_hi":"राजीव रंजन","name_en":"Rajeev ranjan","gen":8,"wife_name":"Soni kumari","children":[{"id":"m_1785828931932","name_hi":"रचित रंजन","name_en":"Rachit ranjan","gen":9}]},{"id":"m_1785816632908","name_hi":"अंकित रंजन","name_en":"Ankit ranjan","gen":8,"children":[{"id":"m_1785829010032","name_hi":"अक्षत रंजन","name_en":"Akshat ranjan","gen":9}]}]},{"id":"m_1785816441209","name_hi":"अशोक कुमार रजक","name_en":"Ashok kumar rajak","gen":7,"children":[{"id":"m_1785816713363","name_hi":"नितिश कुमार","name_en":"Nitish kumar","gen":8},{"id":"m_1785816766835","name_hi":"कुंदन कुमार","name_en":"Kundan kumar","gen":8}]}]},{"id":"m_1785816109117","name_hi":"स्व. बसंत रजक","name_en":"Late Vashant rajak","gen":6},{"id":"m_1785855724493","name_hi":"भागीरथ प्रसाद","name_en":"Bhagirath prasad","gen":6,"children":[{"id":"m_1785855791276","name_hi":"निर्भय कुमार (गुल्लू)","name_en":"Nirbhay Kumar (Gullu)","gen":7},{"id":"m_1785855841322","name_hi":"स्व. गुंजन कुमार","name_en":"Late Gunjan Kumar","gen":7}]}]},{"id":"m_1785819102216","name_hi":"काशी महतो","name_en":"Kashi mahto","gen":5},{"id":"m_1785819211862","name_hi":"गेंदा महतो","name_en":"Genda mahto","gen":5,"wife_name":"बासो देवी","children":[{"id":"m_1785819276749","name_hi":"सहदेव प्रसाद","name_en":"Sahdev prasad","gen":6,"wife_name":"मानती देवी","children":[{"id":"m_1785828655610","name_hi":"पवित्र","name_en":"Pavitra","gen":7},{"id":"m_1785828680701","name_hi":"गौतम","name_en":"Gautam","gen":7},{"id":"m_1785828768827","name_hi":"विवेक","name_en":"Vivek","gen":7}]},{"id":"m_1785819337399","name_hi":"स्व. अनुज कुमार","name_en":"Late Anuj kumar","gen":6,"wife_name":"रीना देवी","children":[{"id":"m_1785828860139","name_hi":"अमृत राज (राजन)","name_en":"Amrit Raj (Rajan)","gen":7}]}]}]}]},{"id":"b5","name_hi":"5. दिपचंद महतो","name_en":"5. Dipchand Mahto","branch_id":5,"gen":3,"children":[{"id":"b5_1","name_hi":"जगदीप महतो","name_en":"Jagdeep Mahto","gen":4,"children":[{"id":"b5_1_3","name_hi":"नुरन महतो","name_en":"Nuran Mahto","gen":5,"children":[{"id":"m_1785856147540","name_hi":"स्व. रविन्द्र महतो","name_en":"Late Ravindra mahto","gen":6},{"id":"m_1785856232475","name_hi":"स्व. वेदप्रकाश (साधु जी)","name_en":"Late vedprakash (sadhu ji)","gen":6,"children":[{"id":"m_1792413645767","name_hi":"शिवशंकर रजक","name_en":"Shivsankar rajak","gen":7},{"id":"m_1792413747307","name_hi":"सागर कुमार (कारु)","name_en":"Sagar Kumar","gen":7},{"id":"m_1792413815827","name_hi":"शंभू कुमार","name_en":"Shanbhu kumar","gen":7},{"id":"m_1792413854194","name_hi":"हरिवंश (गोरका)","name_en":"Harivansh","gen":7},{"id":"m_1792413968950","name_hi":"इन्द्रजीत कुमार","name_en":"Inderjeet Kumar","gen":7}]},{"id":"m_1785856279518","name_hi":"स्व. ऋषि व्यास","name_en":"Late Rishi vyash","gen":6,"children":[{"id":"m_1792414000886","name_hi":"संतोष कुमार","name_en":"Santosh Kumar","gen":7}]},{"id":"m_1785856327259","name_hi":"जवाहर लाल","name_en":"Jawahar laal","gen":6,"children":[{"id":"m_1792414035203","name_hi":"राजीव कुमार (वांटू)","name_en":"Rajeev Kumar","gen":7}]},{"id":"m_1785856389971","name_hi":"डॉ प्रेम कुमार (बाल्मीकि)","name_en":"Dr. Prem Kumar (Balmikki)","gen":6}]},{"id":"b5_1_4","name_hi":"जुगेश्वर महतो उर्फ जुलाहे","name_en":"Jugeshwar Mahto alias Julahe","gen":5},{"id":"b5_1_5","name_hi":"हरिनाथ महतो","name_en":"Harinath Mahto","gen":5,"children":[{"id":"m_1785856518112","name_hi":"स्व. विनोद कुमार","name_en":"Late Vinod kumar","gen":6,"children":[{"id":"m_1785856708389","name_hi":"राणा रणजीत सिंह","name_en":"Rana Ranjit Singh","gen":7},{"id":"m_1785856741231","name_hi":"राणा प्रताप सिंह","name_en":"Rana Pratap Singh","gen":7}]},{"id":"m_1785856651541","name_hi":"स्व. सुबोध कुमार","name_en":"Late Subodh kumar","gen":6,"children":[{"id":"m_1785856768093","name_hi":"रवि कुमार","name_en":"Ravi kumar","gen":7},{"id":"m_1785856793449","name_hi":"गोलू","name_en":"Golu","gen":7},{"id":"m_1785856815543","name_hi":"रोहित कुमार","name_en":"Rohit Kumar","gen":7}]}]}]}]},{"id":"b6","name_hi":"6. छोटू महतो","name_en":"6. Chhotu Mahto","branch_id":6,"gen":3,"children":[{"id":"b6_1","name_hi":"भोली महतो","name_en":"Bholi Mahto","gen":4,"children":[{"id":"m_1785819629958","name_hi":"रामेश्वर महतो","name_en":"Rameshwar mahto","gen":5,"children":[{"id":"m_1785857012110","name_hi":"श्रवण कुमार (दाढ़ीयल)","name_en":"Srawan kumar","gen":6}]},{"id":"m_1785819696040","name_hi":"गिरवल महतो","name_en":"Girwal mahto","gen":5},{"id":"m_1785819746626","name_hi":"नोखु महतो","name_en":"Nokhu mahto","gen":5},{"id":"m_1785819793292","name_hi":"बौआ जी","name_en":"Bauwa ji","gen":5,"children":[{"id":"m_1785857052477","name_hi":"स्व. अनिल कुमार","name_en":"Late Anil kumar","gen":6},{"id":"m_1785857078837","name_hi":"सुधीर कुमार","name_en":"Sudhir kumar","gen":6,"children":[{"id":"m_1785857245911","name_hi":"सुमित कुमार (कुक्की)","name_en":"Sumit kumar (Kukki)","gen":7},{"id":"m_1785857273731","name_hi":"सुधांशु कुमार","name_en":"Sudhanshu Kumar","gen":7}]},{"id":"m_1785857100684","name_hi":"सुजीत कुमार","name_en":"Sujit kumar","gen":6,"children":[{"id":"m_1785857295774","name_hi":"निखिल कुमार","name_en":"Nikhil Kumar","gen":7}]},{"id":"m_1785857120264","name_hi":"राजेश कुमार","name_en":"Rajesh kumar","gen":6},{"id":"m_1785857151932","name_hi":"राकेश कुमार","name_en":"Rakesh Kumar","gen":6},{"id":"m_1785857179297","name_hi":"विवेक कुमार","name_en":"Vivek Kumar","gen":6}]}]},{"id":"b6_2","name_hi":"वंशी महतो","name_en":"Vanshi Mahto","gen":4,"children":[{"id":"b6_2_1","name_hi":"चमरू महतो","name_en":"Chamru Mahto","gen":5,"children":[{"id":"m_1785857352401","name_hi":"राज किशोर कुमार","name_en":"Raj kishore kumar","gen":6,"children":[{"id":"m_1785857509215","name_hi":"चंदन कुमार","name_en":"Chandan Kumar","gen":7},{"id":"m_1785857533716","name_hi":"कुणाल कुमार","name_en":"Kunal Kumar","gen":7}]},{"id":"m_1785857414990","name_hi":"शशि भूषण कुमार (भूषण)","name_en":"Shashi Bhushan kumar (Bhushan)","gen":6,"children":[{"id":"m_1785857561424","name_hi":"राजा कुमार","name_en":"Raja kumar","gen":7},{"id":"m_1785857586164","name_hi":"छोटू कुमार","name_en":"Chhotu kumar","gen":7}]},{"id":"m_1785857442422","name_hi":"दीपक कुमार (दीपू)","name_en":"Deepak Kumar (Deepu)","gen":6}]},{"id":"b6_2_2","name_hi":"प्रयाग महतो","name_en":"Prayag Mahto","gen":5}]},{"id":"b6_3","name_hi":"लालजीत महतो","name_en":"Laljeet Mahto","gen":4,"children":[{"id":"b6_3_1","name_hi":"महावीर महतो","name_en":"Mahavir Mahto","gen":5,"children":[{"id":"m_1785857638582","name_hi":"रामशरण लाल","name_en":"Ramsharan laal","gen":6,"children":[{"id":"m_1785857782437","name_hi":"स्व. सुरेंद्र रजक","name_en":"Late Surendra rajak","gen":7,"children":[{"id":"m_1785857869269","name_hi":"सतीश कुमार","name_en":"Satish Kumar","gen":8}]},{"id":"m_1785857811896","name_hi":"राज कुमार प्रसाद","name_en":"Raj Kumar Prasad","gen":7,"children":[{"id":"m_1785857894695","name_hi":"राकेश कुमार","name_en":"Rakesh Kumar","gen":8},{"id":"m_1785857920972","name_hi":"रजनीश कुमार","name_en":"Rajnish Kumar","gen":8},{"id":"m_1785857943874","name_hi":"रूपेश कुमार","name_en":"Rupesh Kumar","gen":8}]},{"id":"m_1785857843411","name_hi":"धर्मेंद्र कुमार","name_en":"Dharmendar kumar","gen":7}]},{"id":"m_1785857656813","name_hi":"रामू महतो","name_en":"Ramu mahto","gen":6,"children":[{"id":"m_1785857989319","name_hi":"अरुण कुमार","name_en":"Arun Kumar","gen":7,"children":[{"id":"m_1792414349317","name_hi":"रवि कुमार","name_en":"Ravi kumar","gen":8}]},{"id":"m_1785858018919","name_hi":"ब्रह्मदेव कुमार","name_en":"Brahmdev kumar","gen":7},{"id":"m_1785858044485","name_hi":"प्रमोद कुमार","name_en":"Pramod Kumar","gen":7,"children":[{"id":"m_1792414422365","name_hi":"सचिन कुमार (सोनू)","name_en":"Sachin Kumar","gen":8}]},{"id":"m_1785858066929","name_hi":"सतेन्द्र कुमार","name_en":"Satendra Kumar","gen":7}]},{"id":"m_1785857714421","name_hi":"प्रभु महतो","name_en":"Parbhu mahto","gen":6,"children":[{"id":"m_1785858097779","name_hi":"संजय कुमार","name_en":"Sanjay kumar","gen":7}]},{"id":"m_1785857745476","name_hi":"राजो महतो","name_en":"Rajo mahto","gen":6}]},{"id":"b6_3_2","name_hi":"नन्द किशोर महतो","name_en":"Nand Kishor Mahto","gen":5,"children":[{"id":"m_1785858155362","name_hi":"देवनन्दन प्रसाद (देवन)","name_en":"Devnandan prasad (Devan)","gen":6,"children":[{"id":"m_1785858219969","name_hi":"देव मानोज कुमार","name_en":"Dev manoj kumar","gen":7},{"id":"m_1785858296972","name_hi":"देव आशीष कुमार","name_en":"Dev Ashish Kumar","gen":7}]},{"id":"m_1785858178126","name_hi":"प्रेम कुमार","name_en":"Prem Kumar","gen":6}]}]},{"id":"b6_4","name_hi":"कारू महतो","name_en":"Karu Mahto","gen":4,"children":[{"id":"b6_4_1","name_hi":"रोशन महतो","name_en":"Roshan Mahto","gen":5},{"id":"b6_4_2","name_hi":"मुन्नी लाल महतो","name_en":"Munni Lal Mahto","gen":5},{"id":"b6_4_3","name_hi":"धनी लाल महतो","name_en":"Dhani Lal Mahto","gen":5},{"id":"b6_4_4","name_hi":"मिश्री महतो","name_en":"Mishri Mahto","gen":5},{"id":"b6_4_5","name_hi":"जगलाल महतो","name_en":"Jaglal Mahto","gen":5}]}]}]}]};
+
+        // Initial Other Families Array (अन्य परिवार / समाज)
+        const initialOtherTrees = [];
+
+        let currentLang = 'hi', treeData = null, otherTrees = [], activeOtherTreeIndex = 0, isAdmin = false, currentTreeLayout = 'list';
+        let activeAction = null, activeInfoNodeId = null, parsedPendingPayload = null, d3ZoomBehavior = null, d3Svg = null, generatedOtpHash = null;
+
+        function encodeApprovalToken(obj) { return "VANSH-" + btoa(encodeURIComponent(JSON.stringify(obj))); }
+        function decodeApprovalToken(str) { return JSON.parse(decodeURIComponent(atob(str.trim().replace(/^VANSH-/, '')))); }
+
+        function loadTreeData() {
+            const savedPinHash = localStorage.getItem('vanshawali_admin_hash_v7');
+            if (savedPinHash) ADMIN_PIN_SHA256 = savedPinHash;
+
+            const s = localStorage.getItem('vanshawali_master_v7');
+            if (s) { try { treeData = JSON.parse(s); } catch(e) { treeData = JSON.parse(JSON.stringify(initialTreeData)); } }
+            else treeData = JSON.parse(JSON.stringify(initialTreeData));
+
+            const o = localStorage.getItem('vanshawali_other_v7');
+            if (o) { try { otherTrees = JSON.parse(o); } catch(e) { otherTrees = JSON.parse(JSON.stringify(initialOtherTrees)); } }
+            else otherTrees = JSON.parse(JSON.stringify(initialOtherTrees));
+        }
+
+        function saveTreeData() {
+            localStorage.setItem('vanshawali_master_v7', JSON.stringify(treeData));
+            localStorage.setItem('vanshawali_other_v7', JSON.stringify(otherTrees));
+            updateStats(); renderTree(); renderOtherSection(); renderRoadmap(); renderAnalytics();
+        }
+
+        // First-Time Only Welcome Guide Logic
+        function checkFirstTimeVisit() {
+            const visited = localStorage.getItem('vanshawali_visited_v1');
+            if (!visited) {
+                document.getElementById('welcomeGuideModal').style.display = 'flex';
+            }
+        }
+        function openWelcomeGuide() { document.getElementById('welcomeGuideModal').style.display = 'flex'; }
+        function dismissWelcomeGuide() {
+            if (document.getElementById('chkDontShowAgain').checked) {
+                localStorage.setItem('vanshawali_visited_v1', 'true');
+            }
+            closeModal('welcomeGuideModal');
+        }
+
+        // SHA-256 Admin Authentication & WhatsApp OTP Reset
+        function unlockAdminMode() {
+            const enteredPin = document.getElementById('adminPinInput').value.trim();
+            if (sha256(enteredPin) === ADMIN_PIN_SHA256) {
+                isAdmin = true;
+                document.getElementById('adminLoginSection').style.display = 'none';
+                document.getElementById('adminDashboardSection').style.display = 'block';
+                document.getElementById('downloadMasterBtn').style.display = 'inline-flex';
+                document.getElementById('requesterBox').style.display = 'none';
+                const b = document.getElementById('modeBadge');
+                b.className = 'mode-badge mode-admin';
+                b.textContent = '🔓 एडमिन मोड सक्रिय (Admin Mode Unlocked)';
+                renderTree(); renderOtherSection();
+            } else {
+                alert('गलत पासवर्ड! कृपया सही एडमिन पिन दर्ज करें।');
+            }
+        }
+
+        function lockAdminMode() {
+            isAdmin = false;
+            document.getElementById('adminPinInput').value = '';
+            document.getElementById('adminLoginSection').style.display = 'block';
+            document.getElementById('adminDashboardSection').style.display = 'none';
+            document.getElementById('downloadMasterBtn').style.display = 'none';
+            document.getElementById('requesterBox').style.display = 'block';
+            const b = document.getElementById('modeBadge');
+            b.className = 'mode-badge mode-public';
+            b.textContent = '📜 पारिवारिक अभिलेख व्यू (Public Archive Mode - एडमिन स्वीकृति आवश्यक)';
+            renderTree(); renderOtherSection();
+        }
+
+        function toggleOtpResetBox() {
+            const box = document.getElementById('otpResetSection');
+            document.getElementById('adminLoginSection').style.display = 'block';
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function sendAdminOtpToWhatsapp() {
+            const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            generatedOtpHash = sha256(randomOtp);
+            document.getElementById('otpVerifyInputs').style.display = 'block';
+            const msg = `प्रिय अंकित रंजन जी,\nवंशावली पोर्टल का एडमिन पासवर्ड बदलने के लिए आपका सुरक्षा OTP है: *${randomOtp}*\n(कृपया इस OTP को पोर्टल में दर्ज कर नया पासवर्ड सेट करें)`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function verifyOtpAndChangePin() {
+            const otpInput = document.getElementById('inputOtpCode').value.trim();
+            const newPin = document.getElementById('inputNewAdminPin').value.trim();
+            if (!otpInput || !newPin) return alert('कृपया OTP और नया पासवर्ड दोनों दर्ज करें!');
+            if (!generatedOtpHash || sha256(otpInput) !== generatedOtpHash) {
+                return alert('अमान्य OTP! कृपया WhatsApp पर प्राप्त सही 6-अंकों का OTP डालें।');
+            }
+            ADMIN_PIN_SHA256 = sha256(newPin);
+            localStorage.setItem('vanshawali_admin_hash_v7', ADMIN_PIN_SHA256);
+            generatedOtpHash = null;
+            document.getElementById('inputOtpCode').value = '';
+            document.getElementById('inputNewAdminPin').value = '';
+            document.getElementById('otpResetSection').style.display = 'none';
+            alert('✅ आपका एडमिन पासवर्ड सफलतापूर्वक बदल दिया गया है! कृपया मास्टर HTML फाइल डाउनलोड कर लें ताकि नया पासवर्ड स्थायी रूप से सेव हो जाए।');
+            document.getElementById('adminPinInput').value = newPin;
+            unlockAdminMode();
+        }
+
+        // Find node across Both Main Tree and Other Families
+        function findNodeAnywhere(id) {
+            let res = findNodeById(treeData, id);
+            if (res) return { node: res, isOther: false };
+            for (let i = 0; i < otherTrees.length; i++) {
+                let r2 = findNodeById(otherTrees[i], id);
+                if (r2) return { node: r2, isOther: true, treeIndex: i };
+            }
+            return null;
+        }
+
+        function previewApprovalCode() {
+            const raw = document.getElementById('approvalCodeInput').value.trim();
+            if (!raw) return alert('कृपया अप्रूवल कोड पेस्ट करें!');
+            try {
+                const d = decodeApprovalToken(raw);
+                parsedPendingPayload = d;
+                let html = '';
+                if (d.action === 'new_other_family') {
+                    html = `<strong>प्रकार:</strong> 🏘️ नया अन्य परिवार वृक्ष (New Society Family)<br><strong>मूल पुरुष:</strong> ${d.name_hi} (${d.name_en})<br><strong>स्थान/विवरण:</strong> ${d.notes || '-'}<br><strong>निवेदक:</strong> ${d.requester || '-'}`;
+                } else {
+                    const found = findNodeAnywhere(d.targetId);
+                    const tName = found ? found.node.name_hi : 'अज्ञात';
+                    if (d.action === 'add') html = `<strong>नई संतान:</strong> ${d.name_hi} (${d.name_en})<br><strong>पिता/पूर्वज:</strong> ${tName}<br><strong>निवेदक:</strong> ${d.requester || '-'}`;
+                    else if (d.action === 'edit') html = `<strong>संशोधन:</strong> ${tName} ➔ ${d.name_hi} (${d.name_en})`;
+                    else if (d.action === 'info') html = `<strong>व्यक्तिगत जानकारी (${tName}):</strong> पत्नी: ${d.wife_name || '-'}, जन्म: ${d.dob || '-'}, विवरण: ${d.notes || '-'}`;
+                }
+                document.getElementById('approvalPreviewContent').innerHTML = html;
+                document.getElementById('approvalPreviewBox').style.display = 'block';
+            } catch (e) { alert('अमान्य कोड!'); }
+        }
+
+        function applyApprovedRequest() {
+            if (!parsedPendingPayload) return;
+            const d = parsedPendingPayload;
+            if (d.action === 'new_other_family') {
+                otherTrees.push({
+                    id: 'other_root_' + Date.now(),
+                    name_hi: d.name_hi,
+                    name_en: d.name_en,
+                    gen: 1,
+                    notes: d.notes || '',
+                    children: []
+                });
+            } else {
+                const found = findNodeAnywhere(d.targetId);
+                if (!found) return alert('सदस्य नहीं मिला!');
+                const t = found.node;
+                if (d.action === 'add') {
+                    if (!t.children) t.children = [];
+                    t.children.push({ id: 'm_' + Date.now(), name_hi: d.name_hi, name_en: d.name_en, gen: (t.gen || 1) + 1 });
+                } else if (d.action === 'edit') {
+                    if (d.name_hi) t.name_hi = d.name_hi;
+                    if (d.name_en) t.name_en = d.name_en;
+                } else if (d.action === 'info') {
+                    t.photo_url = d.photo_url || t.photo_url; t.wife_name = d.wife_name || t.wife_name;
+                    t.dob = d.dob || t.dob; t.dod = d.dod || t.dod; t.notes = d.notes || t.notes;
+                }
+            }
+            saveTreeData();
+            document.getElementById('approvalPreviewBox').style.display = 'none';
+            document.getElementById('approvalCodeInput').value = '';
+            parsedPendingPayload = null;
+            alert('✅ बदलाव सफलतापूर्वक वंशावली में जोड़ दिया गया है!');
+        }
+
+        // Updated Salutation: "प्रिय अंकित रंजन जी"
+        function launchFamilyApprovalTicket(payload, summaryText) {
+            const token = encodeApprovalToken(payload);
+            document.getElementById('generatedTokenBox').value = token;
+            const msg = `प्रिय अंकित रंजन जी,\nवंशावली में नया विवरण जोड़ने का अनुरोध:\n${summaryText}\n\n🔐 Approval Code:\n${token}`;
+            document.getElementById('whatsappShareLink').href = `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+            document.getElementById('emailShareLink').href = `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Vanshawali Approval Request')}&body=${encodeURIComponent(msg)}`;
+            document.getElementById('approvalTicketModal').style.display = 'flex';
+        }
+
+        function copyApprovalToken() {
+            const b = document.getElementById('generatedTokenBox');
+            b.select(); navigator.clipboard.writeText(b.value);
+            alert('कोड कॉपी हो गया! अब इसे प्रिय अंकित रंजन जी (+91 9430019427) को WhatsApp पर भेजें।');
+        }
+
+        // Other Families (अन्य समाज परिवार) Logic
+        function openNewFamilyModal() {
+            document.getElementById('otherRootHi').value = '';
+            document.getElementById('otherRootEn').value = '';
+            document.getElementById('otherRootNote').value = '';
+            document.getElementById('otherRequester').value = '';
+            document.getElementById('newFamilyModal').style.display = 'flex';
+        }
+
+        function saveNewOtherFamily() {
+            const hi = document.getElementById('otherRootHi').value.trim();
+            const en = document.getElementById('otherRootEn').value.trim();
+            const note = document.getElementById('otherRootNote').value.trim();
+            const req = document.getElementById('otherRequester').value.trim();
+            if (!hi && !en) return alert('कृपया मूल पूर्वज का नाम दर्ज करें!');
+            closeModal('newFamilyModal');
+
+            if (isAdmin) {
+                otherTrees.push({ id: 'other_root_' + Date.now(), name_hi: hi || en, name_en: en || hi, gen: 1, notes: note, children: [] });
+                activeOtherTreeIndex = otherTrees.length - 1;
+                saveTreeData();
+            } else {
+                launchFamilyApprovalTicket(
+                    { action: 'new_other_family', name_hi: hi || en, name_en: en || hi, notes: note, requester: req },
+                    `नया परिवार वृक्ष (अन्य समाज): "${hi || en}" (${note}) को शुरू करना (निवेदक: ${req || 'सदस्य'})`
+                );
+            }
+        }
+
+        function renderOtherSection() {
+            const pills = document.getElementById('otherFamiliesPills');
+            const container = document.getElementById('otherTreeContainer');
+            if (!otherTrees || otherTrees.length === 0) {
+                pills.innerHTML = '';
+                container.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+                    <div style="font-size:2.5rem; margin-bottom:10px;">🏘️</div>
+                    <h3 style="margin:0 0 8px; color:var(--primary);">अन्य परिवार / समाज वंशावली खंड</h3>
+                    <p style="max-width:520px; margin:0 auto 16px;">यहाँ आशानगर या समाज के अन्य परिवार जो इस समाज का हिस्सा हैं, अपना स्वतंत्र नया वंश-वृक्ष शुरू कर सकते हैं।</p>
+                    <button class="btn btn-primary" onclick="openNewFamilyModal()">➕ पहला अन्य परिवार वृक्ष जोड़ें</button>
+                </div>`;
+                return;
+            }
+            if (activeOtherTreeIndex >= otherTrees.length) activeOtherTreeIndex = 0;
+            pills.innerHTML = otherTrees.map((t, idx) =>
+                `<button class="branch-pill ${idx === activeOtherTreeIndex ? 'active' : ''}" onclick="selectOtherTree(${idx})">🌳 ${currentLang === 'hi' ? t.name_hi : t.name_en}</button>`
+            ).join('');
+
+            const selectedTree = otherTrees[activeOtherTreeIndex];
+            const wCls = currentTreeLayout === 'org' ? 'org-tree-wrapper org-tree' : '';
+            const uCls = currentTreeLayout === 'org' ? '' : 'tree';
+            container.innerHTML = `<div class="${wCls}"><ul class="${uCls}" style="padding-left:0;">${renderNodeHTML(selectedTree, true)}</ul></div>`;
+        }
+
+        function selectOtherTree(idx) { activeOtherTreeIndex = idx; renderOtherSection(); }
+
+        // Photoshop-Style Print & PDF Studio Functions
+        function openPrintStudio() { document.getElementById('printStudioModal').style.display = 'flex'; }
+
+        function buildCleanPrintDOM() {
+            const targetType = document.getElementById('printTargetSelect').value;
+            const customTitle = document.getElementById('printCustomTitle').value.trim();
+            const printArea = document.getElementById('printableChartArea');
+            printArea.innerHTML = '';
+
+            const headerBanner = `<div style="text-align:center; border-bottom:2px solid #8B261D; padding-bottom:10px; margin-bottom:18px; font-family:'Noto Sans Devanagari',sans-serif;">
+                <h2 style="margin:0; color:#8B261D; font-size:22px;">${customTitle}</h2>
+                <p style="margin:4px 0 0; font-size:12px; color:#555;">आधिकारिक वंशावली चार्ट अभिलेख • कुल सदस्य: ${countMembers(treeData)} • पीढ़ियाँ: ${getMaxGen(treeData)}</p>
+            </div>`;
+
+            let chartContent = '';
+            if (targetType === 'radial_svg') {
+                switchTab('radial');
+                const svgEl = document.querySelector('#d3VizContainer svg');
+                chartContent = svgEl ? `<div style="text-align:center;">${svgEl.outerHTML}</div>` : '';
+            } else {
+                const cloneContainer = document.getElementById('treeContainer').cloneNode(true);
+                if (targetType === 'full_expanded') {
+                    cloneContainer.querySelectorAll('.collapsed').forEach(el => el.classList.remove('collapsed'));
+                }
+                cloneContainer.querySelectorAll('.action-btns, .toggle-btn').forEach(el => el.remove());
+                chartContent = cloneContainer.innerHTML;
+            }
+
+            printArea.innerHTML = `<div id="exportCanvasWrapper" style="background:#FFFFFF; color:#000000; padding:24px; display:inline-block; min-width:100%;">${headerBanner}${chartContent}</div>`;
+            return document.getElementById('exportCanvasWrapper');
+        }
+
+        function exportChartAsPDF() {
+            const btn = document.getElementById('btnExportPdf');
+            const origText = btn.innerHTML;
+            btn.innerHTML = '⏳ PDF तैयार हो रहा है... कृपया प्रतीक्षा करें';
+
+            const paperSize = document.getElementById('printPaperSize').value;
+            const orientation = document.getElementById('printOrientation').value;
+            const printArea = document.getElementById('printableChartArea');
+            const wrapper = buildCleanPrintDOM();
+            printArea.style.display = 'block';
+
+            const opt = {
+                margin: 8,
+                filename: `Vanshawali_Chart_${paperSize.toUpperCase()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: paperSize, orientation: orientation }
+            };
+
+            html2pdf().set(opt).from(wrapper).save().then(() => {
+                printArea.style.display = 'none';
+                btn.innerHTML = origText;
+                closeModal('printStudioModal');
+            }).catch(() => {
+                printArea.style.display = 'none';
+                btn.innerHTML = origText;
+                alert('PDF बनाते समय त्रुटि हुई, कृपया सीधे प्रिंट विकल्प का उपयोग करें।');
+            });
+        }
+
+        function exportChartAsImage() {
+            const printArea = document.getElementById('printableChartArea');
+            const wrapper = buildCleanPrintDOM();
+            printArea.style.display = 'block';
+
+            html2pdf().set({ html2canvas: { scale: 2, useCORS: true } }).from(wrapper).toImg().outputImg('dataurlstring').then((imgData) => {
+                printArea.style.display = 'none';
+                const a = document.createElement('a');
+                a.href = imgData;
+                a.download = 'Vanshawali_Chart_Poster.png';
+                a.click();
+                closeModal('printStudioModal');
+            });
+        }
+
+        function triggerCleanSystemPrint() {
+            const paperSize = document.getElementById('printPaperSize').value;
+            const orientation = document.getElementById('printOrientation').value;
+            buildCleanPrintDOM();
+            const styleEl = document.createElement('style');
+            styleEl.id = 'dynamicPrintPageStyle';
+            styleEl.innerHTML = `@page { size: ${paperSize} ${orientation}; margin: 10mm; }`;
+            document.head.appendChild(styleEl);
+
+            closeModal('printStudioModal');
+            const printArea = document.getElementById('printableChartArea');
+            printArea.style.display = 'block';
+            setTimeout(() => {
+                window.print();
+                printArea.style.display = 'none';
+                styleEl.remove();
+            }, 250);
+        }
+
+        // Standard Tree & Analytics Helpers
+        function countMembers(n) { let c = 1; if (n.children) n.children.forEach(ch => c += countMembers(ch)); return c; }
+        function getMaxGen(n, g = 1) { let m = g; if (n.children && n.children.length) n.children.forEach(ch => m = Math.max(m, getMaxGen(ch, g + 1))); return m; }
+        function updateStats() {
+            document.getElementById('stat-total').textContent = countMembers(treeData);
+            document.getElementById('stat-gens').textContent = getMaxGen(treeData);
+            document.getElementById('stat-other').textContent = otherTrees.length;
+        }
+        function findNodeById(n, id) {
+            if (n.id === id) return n;
+            if (n.children) { for (let c of n.children) { let r = findNodeById(c, id); if (r) return r; } }
+            return null;
+        }
+        function findLineagePathAny(targetId) {
+            let p = findLineagePath(treeData, targetId);
+            if (p) return p;
+            for (let t of otherTrees) {
+                let p2 = findLineagePath(t, targetId);
+                if (p2) return p2;
+            }
+            return [];
+        }
+        function findLineagePath(n, targetId, path = []) {
+            const p = [...path, currentLang === 'hi' ? n.name_hi : n.name_en];
+            if (n.id === targetId) return p;
+            if (n.children) { for (let c of n.children) { const r = findLineagePath(c, targetId, p); if (r) return r; } }
+            return null;
+        }
+        function deleteNodeById(p, id) {
+            if (!p.children) return false;
+            const i = p.children.findIndex(c => c.id === id);
+            if (i !== -1) { p.children.splice(i, 1); return true; }
+            for (let c of p.children) { if (deleteNodeById(c, id)) return true; }
+            return false;
+        }
+        function getGenBadgeText(g) {
+            const hi = { 1:'१ली पीढ़ी (मूल)', 2:'२री पीढ़ी (•)', 3:'३री पीढ़ी (शाखा)', 4:'४थी पीढ़ी (*)', 5:'५वीं पीढ़ी (>)' };
+            const en = { 1:'1st Gen', 2:'2nd Gen', 3:'3rd Gen', 4:'4th Gen', 5:'5th Gen' };
+            return currentLang === 'hi' ? (hi[g] || g + 'वीं पीढ़ी') : (en[g] || g + 'th Gen');
+        }
+        function changeTheme(t) { if (t === 'archive') document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', t); }
+        function setTreeLayout(l) {
+            currentTreeLayout = l;
+            document.getElementById('btnLayoutList').classList.toggle('btn-primary', l === 'list');
+            document.getElementById('btnLayoutOrg').classList.toggle('btn-primary', l === 'org');
+            renderTree(); renderOtherSection();
+        }
+
+        function renderNodeHTML(n, isRoot = false) {
+            const name = (currentLang === 'hi' ? n.name_hi : n.name_en) || n.name_hi;
+            const note = currentLang === 'hi' ? n.note_hi : n.note_en;
+            const hasCh = n.children && n.children.length > 0;
+            let cls = 'node-box' + (isRoot ? ' root-box' : n.id === 'chaman' ? ' gen2-box' : n.branch_id ? ' branch-box' : '');
+            let h = `<li id="li-${n.id}" class="${hasCh ? 'has-children' : ''}"><div class="${cls}">`;
+            if (hasCh) h += `<span class="toggle-btn" onclick="toggleCollapse(event,'${n.id}')">▼</span>`;
+            h += `<span class="node-name" onclick="openInfoModal(event,'${n.id}')">${name}</span>`;
+            if (n.gen) h += `<span class="gen-badge">${getGenBadgeText(n.gen)}</span>`;
+            if (note) h += `<span class="badge-note">${note}</span>`;
+            h += `<span class="action-btns"><button class="action-btn" onclick="openInfoModal(event,'${n.id}')">ℹ️</button><button class="action-btn" onclick="openAddModal(event,'${n.id}')">➕</button><button class="action-btn" onclick="openEditModal(event,'${n.id}')">✏️</button>`;
+            if (!isRoot && isAdmin) h += `<button class="action-btn" onclick="confirmDelete(event,'${n.id}')">🗑️</button>`;
+            h += `</span></div>`;
+            if (hasCh) { h += `<ul>`; n.children.forEach(c => h += renderNodeHTML(c)); h += `</ul>`; }
+            return h + `</li>`;
+        }
+
+        function renderTree(customRoot = null) {
+            const d = customRoot || treeData;
+            const wCls = currentTreeLayout === 'org' ? 'org-tree-wrapper org-tree' : '';
+            const uCls = currentTreeLayout === 'org' ? '' : 'tree';
+            document.getElementById('treeContainer').innerHTML = `<div class="${wCls}"><ul class="${uCls}" style="padding-left:0;">${renderNodeHTML(d, true)}</ul></div>`;
+            if (!customRoot && currentTreeLayout === 'list') collapseAll();
+        }
+
+        function filterByBranch(bId, btn) {
+            document.querySelectorAll('#page-tree .branch-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (bId === 'all') renderTree();
+            else { const b = findNodeById(treeData, bId); if (b) { renderTree(b); expandAll(); } }
+        }
+
+        function renderD3Diagram(mode = 'radial') {
+            document.getElementById('btnD3Radial').classList.toggle('btn-primary', mode === 'radial');
+            document.getElementById('btnD3Cluster').classList.toggle('btn-primary', mode === 'horizontal');
+            const c = document.getElementById('d3VizContainer');
+            c.querySelectorAll('svg').forEach(s => s.remove());
+            const w = c.clientWidth || 1050, h = c.clientHeight || 600;
+            d3Svg = d3.select('#d3VizContainer').append('svg').attr('width', w).attr('height', h);
+            const g = d3Svg.append('g');
+            d3ZoomBehavior = d3.zoom().scaleExtent([0.2, 4]).on('zoom', e => g.attr('transform', e.transform));
+            d3Svg.call(d3ZoomBehavior);
+            const root = d3.hierarchy(treeData);
+            if (mode === 'radial') {
+                d3.tree().size([2*Math.PI, Math.min(w,h)*0.75]).separation((a,b) => (a.parent==b.parent?1:2)/a.depth)(root);
+                g.selectAll('.link').data(root.links()).join('path').attr('fill','none').attr('stroke','var(--line-color)').attr('stroke-opacity',0.5).attr('stroke-width',1.5).attr('d',d3.linkRadial().angle(d=>d.x).radius(d=>d.y));
+                const node = g.selectAll('.node').data(root.descendants()).join('g').attr('transform',d=>`rotate(${d.x*180/Math.PI-90}) translate(${d.y},0)`).style('cursor','pointer').on('click',(e,d)=>openInfoModal(e,d.data.id));
+                node.append('circle').attr('r',d=>d.depth===0?8:4.5).attr('fill',d=>d.children?'var(--primary)':'#059669');
+                node.append('text').attr('dy','0.31em').attr('x',d=>d.x<Math.PI===!d.children?8:-8).attr('text-anchor',d=>d.x<Math.PI===!d.children?'start':'end').attr('transform',d=>d.x>=Math.PI?'rotate(180)':null).text(d=>currentLang==='hi'?d.data.name_hi:d.data.name_en).style('font-size','11px').style('font-weight','600').style('fill','var(--text)');
+                d3Svg.call(d3ZoomBehavior.transform, d3.zoomIdentity.translate(w/2, h/2).scale(0.75));
+            } else {
+                d3.tree().size([h*3, w*1.3])(root);
+                g.selectAll('.link').data(root.links()).join('path').attr('fill','none').attr('stroke','var(--line-color)').attr('stroke-opacity',0.5).attr('stroke-width',1.6).attr('d',d3.linkHorizontal().x(d=>d.y).y(d=>d.x));
+                const node = g.selectAll('.node').data(root.descendants()).join('g').attr('transform',d=>`translate(${d.y},${d.x})`).style('cursor','pointer').on('click',(e,d)=>openInfoModal(e,d.data.id));
+                node.append('circle').attr('r',5).attr('fill',d=>d.children?'var(--primary)':'#059669');
+                node.append('text').attr('dy','0.32em').attr('x',d=>d.children?-10:10).attr('text-anchor',d=>d.children?'end':'start').text(d=>currentLang==='hi'?d.data.name_hi:d.data.name_en).style('font-size','12px').style('font-weight','600').style('fill','var(--text)');
+                d3Svg.call(d3ZoomBehavior.transform, d3.zoomIdentity.translate(100, -h*0.7).scale(0.65));
+            }
+        }
+        function zoomD3(f) { if (d3Svg && d3ZoomBehavior) d3Svg.transition().duration(300).call(d3ZoomBehavior.scaleBy, f); }
+        function resetD3Zoom() { renderD3Diagram(document.getElementById('btnD3Radial').classList.contains('btn-primary') ? 'radial' : 'horizontal'); }
+
+        function getMembersByGen(n, map = {}) {
+            const g = n.gen || 1; if (!map[g]) map[g] = []; map[g].push(n);
+            if (n.children) n.children.forEach(c => getMembersByGen(c, map));
+            return map;
+        }
+
+        function renderAnalytics() {
+            const map = getMembersByGen(treeData), total = countMembers(treeData);
+            const gC = document.getElementById('genChartContainer'); gC.innerHTML = '';
+            Object.keys(map).sort((a,b)=>a-b).forEach(g => {
+                const cnt = map[g].length, pct = Math.round((cnt/total)*100);
+                gC.innerHTML += `<div class="bar-row"><div class="bar-label"><span>${getGenBadgeText(g)}</span><span>${cnt} सदस्य (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct*2.2,4)}%"></div></div></div>`;
+            });
+            const bC = document.getElementById('branchChartContainer'); bC.innerHTML = '';
+            (treeData.children[0].children || []).forEach(b => {
+                const cnt = countMembers(b), pct = Math.round((cnt/total)*100);
+                bC.innerHTML += `<div class="bar-row"><div class="bar-label"><span>${currentLang==='hi'?b.name_hi:b.name_en}</span><span>${cnt} सदस्य (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct*2.5,6)}%"></div></div></div>`;
+            });
+        }
+
+        function renderRoadmap() {
+            const map = getMembersByGen(treeData), c = document.getElementById('roadmapContainer'); c.innerHTML = '';
+            Object.keys(map).sort((a,b)=>a-b).forEach(g => {
+                const list = map[g];
+                let h = `<div class="gen-row"><div class="gen-header"><div class="gen-title">👑 ${getGenBadgeText(parseInt(g))}</div><span class="gen-count-badge">${list.length} सदस्य</span></div><div class="member-avatar-grid">`;
+                list.forEach(m => {
+                    const nm = currentLang === 'hi' ? m.name_hi : m.name_en;
+                    const def = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 24 24' fill='%238B261D'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+                    h += `<div class="avatar-card" onclick="openInfoModal(event,'${m.id}')"><img class="avatar-img" src="${m.photo_url||def}"><div><div class="avatar-name">${nm}</div>${m.wife_name?`<div style="font-size:0.74rem;color:var(--text-muted);">💍 ${m.wife_name}</div>`:''}</div></div>`;
+                });
+                c.innerHTML += h + `</div></div>`;
+            });
+        }
+
+        function switchTab(t) {
+            ['tree','other','radial','roadmap','analytics','guide','admin'].forEach(x => {
+                document.getElementById('tab-'+x).classList.toggle('active', x===t);
+                document.getElementById('page-'+x).style.display = x===t ? 'block' : 'none';
+            });
+            if (t==='other') renderOtherSection();
+            if (t==='roadmap') renderRoadmap();
+            if (t==='radial') renderD3Diagram('radial');
+            if (t==='analytics') renderAnalytics();
+        }
+
+        function toggleCollapse(e, id) { e.stopPropagation(); const li = document.getElementById('li-'+id); if (li && li.classList.contains('has-children')) li.classList.toggle('collapsed'); }
+        function expandAll() { document.querySelectorAll('#treeContainer li.has-children, #otherTreeContainer li.has-children').forEach(li => li.classList.remove('collapsed')); }
+        function collapseAll() { document.querySelectorAll('#treeContainer li.has-children').forEach(li => { if (li.id!=='li-root' && li.id!=='li-chaman') li.classList.add('collapsed'); }); }
+        function toggleLanguage() { currentLang = currentLang==='hi'?'en':'hi'; document.getElementById('lang-btn').textContent = currentLang==='hi'?'🌐 भाषा: हिन्दी':'🌐 Language: English'; renderTree(); renderOtherSection(); renderRoadmap(); renderAnalytics(); }
+
+        function openAddModal(e, pId) {
+            if (e) e.stopPropagation();
+            activeAction = { type:'add', nodeId:pId };
+            const found = findNodeAnywhere(pId);
+            document.getElementById('modalTitle').textContent = `${found ? found.node.name_hi : ''} की संतान जोड़ें`;
+            document.getElementById('inputHiName').value = ''; document.getElementById('inputEnName').value = '';
+            document.getElementById('saveModalBtn').textContent = isAdmin ? '✅ सीधे जोड़ें' : '📤 अप्रूवल कोड बनाएँ';
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+        function openAddFromInfo() { const id = activeInfoNodeId; closeModal('infoModalOverlay'); openAddModal(null, id); }
+        function openEditModal(e, nId) {
+            e.stopPropagation();
+            activeAction = { type:'edit', nodeId:nId };
+            const found = findNodeAnywhere(nId);
+            const n = found ? found.node : {};
+            document.getElementById('modalTitle').textContent = `${n.name_hi} - नाम संशोधन`;
+            document.getElementById('inputHiName').value = n.name_hi || ''; document.getElementById('inputEnName').value = n.name_en || '';
+            document.getElementById('saveModalBtn').textContent = isAdmin ? '✅ सीधे सहेजें' : '📤 संशोधन कोड बनाएँ';
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+        function openInfoModal(e, nId) {
+            if (e) e.stopPropagation();
+            activeInfoNodeId = nId;
+            const found = findNodeAnywhere(nId);
+            if (!found) return;
+            const n = found.node, path = findLineagePathAny(nId);
+            document.getElementById('infoModalTitle').textContent = `${n.name_hi} (${getGenBadgeText(n.gen)})`;
+            document.getElementById('lineagePathBox').innerHTML = `<strong>🧬 वंश पथ (Lineage):</strong><br>${path.join(' ➔ ')}`;
+            document.getElementById('inputPhotoUrl').value = n.photo_url || '';
+            document.getElementById('inputWifeName').value = n.wife_name || '';
+            document.getElementById('inputDob').value = n.dob || '';
+            document.getElementById('inputDod').value = n.dod || '';
+            document.getElementById('inputNotes').value = n.notes || '';
+            updatePhotoPreview();
+            document.getElementById('infoModalOverlay').style.display = 'flex';
+        }
+        function updatePhotoPreview() {
+            const u = document.getElementById('inputPhotoUrl').value.trim();
+            document.getElementById('infoPhotoPreview').src = u || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='76' height='76' viewBox='0 0 24 24' fill='%238B261D'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function saveNameModal() {
+            const hi = document.getElementById('inputHiName').value.trim(), en = document.getElementById('inputEnName').value.trim(), req = document.getElementById('inputRequester').value.trim();
+            if (!hi && !en) return alert('कृपया नाम दर्ज करें!');
+            const found = findNodeAnywhere(activeAction.nodeId);
+            if (!found) return;
+            const t = found.node;
+            closeModal('modalOverlay');
+            if (isAdmin) {
+                if (activeAction.type === 'add') { if (!t.children) t.children = []; t.children.push({ id:'m_'+Date.now(), name_hi:hi||en, name_en:en||hi, gen:(t.gen||1)+1 }); }
+                else { if (hi) t.name_hi = hi; if (en) t.name_en = en; }
+                saveTreeData();
+            } else {
+                launchFamilyApprovalTicket({ action:activeAction.type, targetId:activeAction.nodeId, name_hi:hi||en, name_en:en||hi, requester:req },
+                    activeAction.type==='add' ? `${t.name_hi} की संतान के रूप में "${hi||en}" को जोड़ना (निवेदक: ${req||'सदस्य'})` : `${t.name_hi} का नाम संशोधित करके "${hi||en}" करना`);
+            }
+        }
+
+        function saveInfoModal() {
+            const found = findNodeAnywhere(activeInfoNodeId);
+            if (!found) return;
+            const n = found.node;
+            const ph = document.getElementById('inputPhotoUrl').value.trim(), wf = document.getElementById('inputWifeName').value.trim(), db = document.getElementById('inputDob').value.trim(), dd = document.getElementById('inputDod').value.trim(), nt = document.getElementById('inputNotes').value.trim();
+            closeModal('infoModalOverlay');
+            if (isAdmin) { n.photo_url = ph; n.wife_name = wf; n.dob = db; n.dod = dd; n.notes = nt; saveTreeData(); }
+            else launchFamilyApprovalTicket({ action:'info', targetId:activeInfoNodeId, photo_url:ph, wife_name:wf, dob:db, dod:dd, notes:nt }, `${n.name_hi} की व्यक्तिगत जानकारी अपडेट करना`);
+        }
+
+        function confirmDelete(e, id) {
+            e.stopPropagation(); if (!isAdmin) return;
+            const found = findNodeAnywhere(id);
+            if (!found) return;
+            if (confirm(`क्या आप "${found.node.name_hi}" को वंशावली से हटाना चाहते हैं?`)) {
+                if (!deleteNodeById(treeData, id)) {
+                    otherTrees.forEach(ot => deleteNodeById(ot, id));
+                }
+                saveTreeData();
+            }
+        }
+
+        function filterTree() {
+            const q = document.getElementById('searchInput').value.trim().toLowerCase(), boxes = document.querySelectorAll('.node-box');
+            if (!q) { boxes.forEach(b => b.classList.remove('highlight')); collapseAll(); return; }
+            expandAll();
+            boxes.forEach(b => b.classList.toggle('highlight', b.textContent.toLowerCase().includes(q)));
+        }
+
+        function downloadUpdatedHTML() {
+            const wasAdmin = isAdmin; if (wasAdmin) lockAdminMode();
+            let fullDoc = "<!DOCTYPE html>\n" + document.documentElement.outerHTML
+                .replace(/let ADMIN_PIN_SHA256 = ".*?";/, `let ADMIN_PIN_SHA256 = "${ADMIN_PIN_SHA256}";`)
+                .replace(/const initialTreeData = \{[\s\S]*?\};/, `const initialTreeData = ${JSON.stringify(treeData)};`)
+                .replace(/const initialOtherTrees = \[[\s\S]*?\];/, `const initialOtherTrees = ${JSON.stringify(otherTrees)};`);
+            if (wasAdmin) unlockAdminMode();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([fullDoc], { type:'text/html;charset=utf-8;' }));
+            a.download = 'index.html'; a.click();
+        }
+
+        loadTreeData(); updateStats(); renderTree(); renderOtherSection(); checkFirstTimeVisit();
+    </script>
+</body>
+</html>
