@@ -1445,21 +1445,30 @@
                 <p style="margin:5px 0 0; font-size:13px; color:#334155; font-weight:600;">आधिकारिक पारिवारिक वंशावली अभिलेख • कुल सदस्य: ${countMembers(treeData)} • पीढ़ियाँ: ${getMaxGen(treeData)}</p>
             </div>`;
 
-            if (targetType === 'radial_svg') {
+            if (targetType === 'radial_svg' || targetType === 'horizontal_svg') {
+                const mode = targetType === 'radial_svg' ? 'radial' : 'horizontal';
                 switchView('radial');
-                renderD3Diagram('radial');
+                renderD3Diagram(mode);
                 const svgEl = document.querySelector('#d3VizContainer svg');
+                const gEl = svgEl ? svgEl.querySelector('g') : null;
                 let svgMarkup = '';
-                if (svgEl) {
+                if (svgEl && gEl) {
+                    // पूरे आरेख का सटीक आकार (Bounding Box) निकालें ताकि एक भी नाम न कटे
+                    const bbox = gEl.getBBox();
+                    const pad = 40;
                     const clonedSvg = svgEl.cloneNode(true);
-                    clonedSvg.setAttribute('width', '1600');
-                    clonedSvg.setAttribute('height', '1600');
+                    const clonedG = clonedSvg.querySelector('g');
+                    clonedG.removeAttribute('transform'); // ज़ूम हटाकर पूरा चार्ट सीधा दिखाएँ
+                    clonedSvg.setAttribute('viewBox', `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`);
+                    clonedSvg.setAttribute('width', '100%');
+                    clonedSvg.setAttribute('height', mode === 'horizontal' ? '2200' : '1600');
+                    clonedSvg.style.maxWidth = '100%';
+                    clonedSvg.style.height = 'auto';
                     svgMarkup = `<div style="text-align:center; width:100%; overflow:visible;">${clonedSvg.outerHTML}</div>`;
                 }
                 printArea.innerHTML = `<div id="exportCanvasWrapper" style="background:#FFFFFF; color:#000000; padding:24px; display:inline-block; min-width:100%;">${headerBanner}${svgMarkup}</div>`;
                 return document.getElementById('exportCanvasWrapper');
             }
-
             // Tree View Export with Explicit Solid Physical Line Elements (100% visible in html2pdf & Print)
             const cloneContainer = document.getElementById('treeContainer').cloneNode(true);
             if (targetType === 'full_expanded') {
