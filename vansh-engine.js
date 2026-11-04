@@ -1,7 +1,10 @@
 /* =========================================================================
    ⚙️ VANSHAWALI CORE ENGINE (vansh-engine.js)
-   Features: Unified View Picker, Home/Back Navigation, OTP -> Password Reset,
-             Admin Logout, Photo Lightbox, Smart Search & 1-Page Print Studio
+   Features:
+   - Option 1 Top Strip + Symbolic [ अ | A ] Language Switcher (Hindi / English)
+   - Direct Add/Edit Bypass when Admin is Logged In
+   - 2 Separate Name Boxes (Hindi + English)
+   - Live Session Visitor Counter (1,250+ via GAS)
 ========================================================================= */
 
 // 1. LocalStorage Sync with vansh-data.js
@@ -22,6 +25,7 @@ if (savedComments) {
 let FLAT_MEMBERS = [];
 let CURRENT_BRANCH_FILTER = "ALL";
 let CURRENT_D3_MODE = "horizontal";
+let CURRENT_LANG = localStorage.getItem("VANSH_LANG_PREF") || "hi";
 let D3_ZOOM_BEHAVIOR = null;
 let D3_SVG_SEL = null;
 
@@ -31,7 +35,119 @@ function getMainSixBranches() {
 }
 
 /* =========================================================================
-   2. SMART PHOTO & SVG AVATAR RESOLVER
+   2. LANGUAGE ENGINE (HINDI ⇄ ENGLISH) & DISPLAY HELPERS
+========================================================================= */
+function getDisplayName(memberOrNode) {
+    if (!memberOrNode) return "";
+    if (CURRENT_LANG === "en" && memberOrNode.en && memberOrNode.en.trim()) {
+        const prefixMatch = (memberOrNode.name || "").match(/^([0-9]+\.\s*)/);
+        const prefix = prefixMatch ? prefixMatch[1] : "";
+        return prefix + memberOrNode.en.trim();
+    }
+    return memberOrNode.name || "";
+}
+
+function getBranchLabelDisplay(branchStr) {
+    if (!branchStr) return CURRENT_LANG === "en" ? "Main Lineage" : "मूल शाखा";
+    if (CURRENT_LANG === "hi") return branchStr;
+    const map = {
+        "मूल पुरुष (१ली पीढ़ी)": "Root Ancestor (Gen 1)",
+        "द्वितीय पीढ़ी": "2nd Generation",
+        "शाखा 1: मोहन महतो": "Branch 1: Mohan Mahto",
+        "शाखा 2: लछु महतो": "Branch 2: Lachhu Mahto",
+        "शाखा 3: नेमचंद महतो": "Branch 3: Nemchand Mahto",
+        "शाखा 4: हुकुमचंद महतो": "Branch 4: Hukumchand Mahto",
+        "शाखा 5: दिपचंद महतो": "Branch 5: Dipchand Mahto",
+        "शाखा 6: छोटू महतो": "Branch 6: Chhotu Mahto"
+    };
+    return map[branchStr] || branchStr;
+}
+
+function getGenLabelHi(gen) {
+    if (CURRENT_LANG === "en") {
+        if (gen === 1) return "Gen 1 (Root)";
+        if (gen === 2) return "Gen 2";
+        if (gen === 3) return "Gen 3 (Branch)";
+        return `Gen ${gen}`;
+    }
+    if (gen === 1) return "१ली पीढ़ी (मूल)";
+    if (gen === 2) return "२री पीढ़ी";
+    if (gen === 3) return "३री पीढ़ी (शाखा)";
+    if (gen === 4) return "४थी पीढ़ी";
+    if (gen === 5) return "५वीं पीढ़ी";
+    return `${gen}वीं पीढ़ी`;
+}
+
+function toggleLanguageSwitch() {
+    setLanguage(CURRENT_LANG === "hi" ? "en" : "hi");
+}
+
+function setLanguage(lang) {
+    CURRENT_LANG = (lang === "en") ? "en" : "hi";
+    localStorage.setItem("VANSH_LANG_PREF", CURRENT_LANG);
+    document.documentElement.setAttribute("lang", CURRENT_LANG);
+
+    // Update Symbolic Header Switch [ अ | A ]
+    const symHi = document.getElementById("symLangHi");
+    const symEn = document.getElementById("symLangEn");
+    if (symHi && symEn) {
+        symHi.classList.toggle("active", CURRENT_LANG === "hi");
+        symEn.classList.toggle("active", CURRENT_LANG === "en");
+    }
+
+    // Update Sidebar Language Buttons
+    const sbHi = document.getElementById("sbLangHiBtn");
+    const sbEn = document.getElementById("sbLangEnBtn");
+    if (sbHi && sbEn) {
+        sbHi.classList.toggle("active-theme", CURRENT_LANG === "hi");
+        sbEn.classList.toggle("active-theme", CURRENT_LANG === "en");
+    }
+
+    const isEn = (CURRENT_LANG === "en");
+    const setTxt = (id, hi, en) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = isEn ? en : hi;
+    };
+
+    setTxt("hdrMenuTxt", "मेनू", "Menu");
+    setTxt("hdrHomeTxt", "होम", "Home");
+    setTxt("title-text", "स्व. नारायण महतो का वंशावली", "Family Tree of Late Narayan Mahto");
+    setTxt("tagline-text", "✨ हमारा परिवार, हमारा रजक समाज! ✨", "✨ Our Family, Our Rajak Heritage! ✨");
+    setTxt("location-text", "आशानगर, थाना- सोहसराय, बिहार शरीफ (नालंदा)", "Asha Nagar, P.S.- Sohsarai, Bihar Sharif (Nalanda)");
+    setTxt("note-text", "ℹ️ नोट :- यह आँकड़ा स्मरण के आधार पर पारिवारिक सदस्यों द्वारा तैयार किया गया है!", "ℹ️ Note: This lineage record has been compiled by family members based on collective memory!");
+
+    setTxt("lblStatTotal", "कुल पारिवारिक सदस्य", "Total Family Members");
+    setTxt("lblStatBranches", "मुख्य शाखाएँ", "Main Branches");
+    setTxt("lblStatGens", "पीढ़ियाँ", "Generations");
+    setTxt("lblStatVisits", "कुल दर्शक (Total Visits)", "Total Visitors");
+
+    setTxt("ctrlHomeBtn", "🏠 होम", "🏠 Home");
+    setTxt("lblViewPicker", "👁️ दृश्य चुनें:", "👁️ View:");
+    setTxt("ctrlPrintBtn", "🖨️ प्रिंट / PDF", "🖨️ Print / PDF");
+    setTxt("btnExpandAll", "📂 सभी खोलें", "📂 Expand All");
+    setTxt("btnCollapseAll", "📁 संक्षिप्त करें", "📁 Collapse");
+    setTxt("backToHomeBtn", "⬅️ वापस होम (मुख्य वृक्ष) पर जाएँ", "⬅️ Back to Home (Main Tree)");
+    setTxt("currentViewLabel", "📌 किसी भी नाम पर क्लिक करके फोटो व वंश-पथ देखें | ➕ दबाकर नई संतान जोड़ें", "📌 Click any member name for photo & lineage | Press ➕ to add child");
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.placeholder = isEn ? "🔍 Search member name (Hindi / English)..." : "🔍 सदस्य का नाम खोजें (हिंदी / English)...";
+    }
+
+    const todayBadge = document.getElementById("stat-today-badge");
+    if (todayBadge && todayBadge.dataset.count) {
+        todayBadge.innerText = isEn ? `Today: ${todayBadge.dataset.count}` : `आज: ${todayBadge.dataset.count}`;
+    }
+
+    renderAllViews();
+    const radialSec = document.getElementById("view-radial");
+    if (radialSec && radialSec.classList.contains("active")) {
+        renderD3Diagram(CURRENT_D3_MODE);
+    }
+}
+
+/* =========================================================================
+   3. SMART PHOTO & SVG AVATAR RESOLVER
 ========================================================================= */
 function resolvePhotoUrl(rawPath) {
     if (!rawPath || !rawPath.trim()) return "";
@@ -45,7 +161,7 @@ function resolvePhotoUrl(rawPath) {
 
 function getCleanInitials(name) {
     if (!name) return "वंश";
-    return name.replace(/^[0-9]+\.\s*/, "").replace("स्व.", "").trim().slice(0, 2);
+    return name.replace(/^[0-9]+\.\s*/, "").replace("स्व.", "").replace("Late ", "").trim().slice(0, 2);
 }
 
 function buildSvgFallbackDataUri(name, gen = 5) {
@@ -60,18 +176,19 @@ function buildSvgFallbackDataUri(name, gen = 5) {
 }
 
 function renderMemberAvatarHtml(member, cssClass = "member-thumb") {
-    const fallbackUri = buildSvgFallbackDataUri(member.name, member.gen);
+    const dispName = getDisplayName(member);
+    const fallbackUri = buildSvgFallbackDataUri(dispName, member.gen);
     const photoUrl = resolvePhotoUrl(member.photo);
     const srcToUse = photoUrl || fallbackUri;
-    return `<img src="${srcToUse}" alt="${member.name}" class="${cssClass}" onerror="this.onerror=null;this.src='${fallbackUri}';">`;
+    return `<img src="${srcToUse}" alt="${dispName}" class="${cssClass}" onerror="this.onerror=null;this.src='${fallbackUri}';">`;
 }
 
 /* =========================================================================
-   3. FLATTEN TREE & INDEX MEMBERS
+   4. FLATTEN TREE & INDEX MEMBERS
 ========================================================================= */
 function rebuildFlatIndex(node = FAMILY_TREE_DATA, parentId = null, ancestorChain = []) {
     if (node.id === "root-1") FLAT_MEMBERS = [];
-    const currentChain = [...ancestorChain, { id: node.id, name: node.name, gen: node.gen }];
+    const currentChain = [...ancestorChain, { id: node.id, name: node.name, en: node.en || "", gen: node.gen }];
     FLAT_MEMBERS.push({
         id: node.id,
         name: node.name,
@@ -92,7 +209,7 @@ function rebuildFlatIndex(node = FAMILY_TREE_DATA, parentId = null, ancestorChai
 }
 
 /* =========================================================================
-   4. SMART FUZZY & PHONETIC SEARCH ENGINE
+   5. SMART FUZZY & PHONETIC SEARCH ENGINE
 ========================================================================= */
 function normalizePhonetic(str) {
     if (!str) return "";
@@ -149,7 +266,7 @@ function handleSmartSearch(query) {
         .slice(0, 10);
 
     if (scored.length === 0) {
-        box.innerHTML = `<div class="suggestion-item"><span>कोई मिलता-जुलता नाम नहीं मिला</span></div>`;
+        box.innerHTML = `<div class="suggestion-item"><span>${CURRENT_LANG === 'en' ? 'No matching member found' : 'कोई मिलता-जुलता नाम नहीं मिला'}</span></div>`;
         box.style.display = "block";
         return;
     }
@@ -159,13 +276,13 @@ function handleSmartSearch(query) {
             <div style="display:flex; align-items:center; gap:10px;">
                 ${renderMemberAvatarHtml(member, "member-thumb")}
                 <div>
-                    <strong>${member.name}</strong> ${member.en ? `<span style="color:var(--text-muted); font-size:0.8rem;">(${member.en})</span>` : ''}
+                    <strong>${getDisplayName(member)}</strong> ${member.en && CURRENT_LANG === 'hi' ? `<span style="color:var(--text-muted); font-size:0.8rem;">(${member.en})</span>` : ''}
                     <div style="font-size:0.75rem; color:var(--text-muted);">
-                        ${member.branch} • पीढ़ी ${member.gen} • 📍 ${member.location}
+                        ${getBranchLabelDisplay(member.branch)} • ${getGenLabelHi(member.gen)} • 📍 ${member.location}
                     </div>
                 </div>
             </div>
-            <span class="gen-badge">${score >= 95 ? 'सटीक मिलान' : 'मिलता-जुलता'}</span>
+            <span class="gen-badge">${score >= 95 ? (CURRENT_LANG === 'en' ? 'Exact' : 'सटीक मिलान') : (CURRENT_LANG === 'en' ? 'Similar' : 'मिलता-जुलता')}</span>
         </div>
     `).join("");
     box.style.display = "block";
@@ -197,17 +314,8 @@ function focusOnMember(memberId) {
 }
 
 /* =========================================================================
-   5. VIEW 1: CLASSIC COLLAPSIBLE TREE VIEW
+   6. VIEW 1: CLASSIC COLLAPSIBLE TREE VIEW
 ========================================================================= */
-function getGenLabelHi(gen) {
-    if (gen === 1) return "१ली पीढ़ी (मूल)";
-    if (gen === 2) return "२री पीढ़ी";
-    if (gen === 3) return "३री पीढ़ी (शाखा)";
-    if (gen === 4) return "४थी पीढ़ी";
-    if (gen === 5) return "५वीं पीढ़ी";
-    return `${gen}वीं पीढ़ी`;
-}
-
 function buildClassicTreeHtml(node) {
     const childrenToRender = (node.id === "chaman" && CURRENT_BRANCH_FILTER !== "ALL")
         ? (node.children || []).filter(c => c.branch === CURRENT_BRANCH_FILTER)
@@ -231,6 +339,7 @@ function buildClassicTreeHtml(node) {
         : "";
 
     const avatarThumb = renderMemberAvatarHtml(node, "member-thumb");
+    const dispName = getDisplayName(node);
 
     const childrenUl = hasKids
         ? `<ul>${childrenToRender.map(c => buildClassicTreeHtml(c)).join("")}</ul>`
@@ -241,7 +350,7 @@ function buildClassicTreeHtml(node) {
             <div class="node-box ${boxTypeClass}" id="box-${node.id}">
                 ${toggleHtml}
                 ${avatarThumb}
-                <span class="node-name" onclick="openMemberProfileModal('${node.id}')">${node.name}</span>
+                <span class="node-name" onclick="openMemberProfileModal('${node.id}')">${dispName}</span>
                 <span class="gen-badge">${getGenLabelHi(node.gen)}</span>
                 ${notesBadge}
                 <span class="action-btns no-print">
@@ -290,15 +399,14 @@ function handleBranchSelect(val) {
     }
 }
 
-// Member Profile & Photo Lightbox Modal
 function openMemberProfileModal(memberId) {
     const m = FLAT_MEMBERS.find(x => x.id === memberId);
     if (!m) return;
 
-    const pathStr = m.ancestors.map(a => a.name).join(" ➔ ");
-    document.getElementById("currentViewLabel").innerHTML = `📌 <strong>वंश-पथ (${m.name}):</strong> ${pathStr} ${m.notes ? `| <strong>विवरण:</strong> ${m.notes}` : ''}`;
+    const pathStr = m.ancestors.map(a => getDisplayName(a)).join(" ➔ ");
+    document.getElementById("currentViewLabel").innerHTML = `📌 <strong>${getDisplayName(m)}:</strong> ${pathStr} ${m.notes ? `| <strong>${m.notes}</strong>` : ''}`;
 
-    const fallbackUri = buildSvgFallbackDataUri(m.name, m.gen);
+    const fallbackUri = buildSvgFallbackDataUri(getDisplayName(m), m.gen);
     const photoUrl = resolvePhotoUrl(m.photo) || fallbackUri;
     const kids = (m.rawRef && m.rawRef.children) ? m.rawRef.children : [];
 
@@ -307,28 +415,28 @@ function openMemberProfileModal(memberId) {
             <img src="${photoUrl}" alt="${m.name}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:4px solid var(--accent-gold); box-shadow:0 6px 18px rgba(0,0,0,0.18);" onerror="this.onerror=null;this.src='${fallbackUri}';">
         </div>
         <h2 style="margin:0; color:var(--primary); font-size:1.4rem;">${m.name}</h2>
-        ${m.en ? `<div style="color:var(--text-muted); font-size:0.88rem; margin-bottom:8px;">${m.en}</div>` : ''}
+        ${m.en ? `<div style="color:var(--text-muted); font-size:0.9rem; font-weight:600; margin-bottom:8px;">${m.en}</div>` : ''}
         <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:10px 0;">
             <span class="gen-badge" style="font-size:0.8rem; padding:4px 10px;">👑 ${getGenLabelHi(m.gen)}</span>
-            <span class="gen-badge" style="font-size:0.8rem; padding:4px 10px;">🌿 ${m.branch}</span>
+            <span class="gen-badge" style="font-size:0.8rem; padding:4px 10px;">🌿 ${getBranchLabelDisplay(m.branch)}</span>
         </div>
         ${m.notes ? `<div style="margin:8px 0; font-weight:700; color:#991B1B; background:#FEE2E2; display:inline-block; padding:4px 12px; border-radius:999px; font-size:0.84rem;">${m.notes}</div>` : ''}
-        <div style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">📍 निवास: <strong>${m.location}</strong></div>
+        <div style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">📍 ${CURRENT_LANG === 'en' ? 'Location' : 'निवास'}: <strong>${m.location}</strong></div>
         <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border); margin-top:14px; text-align:left; font-size:0.84rem;">
-            <div style="font-weight:800; color:var(--primary); margin-bottom:4px;">📜 संपूर्ण वंश-पथ (Lineage Path):</div>
+            <div style="font-weight:800; color:var(--primary); margin-bottom:4px;">📜 ${CURRENT_LANG === 'en' ? 'Lineage Path' : 'संपूर्ण वंश-पथ'}:</div>
             <div style="line-height:1.6;">${pathStr}</div>
-            ${kids.length > 0 ? `<div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);"><strong>👶 संतान (${kids.length}):</strong> ${kids.map(k => k.name).join(", ")}</div>` : ''}
+            ${kids.length > 0 ? `<div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);"><strong>👶 ${CURRENT_LANG === 'en' ? 'Children' : 'संतान'} (${kids.length}):</strong> ${kids.map(k => getDisplayName(k)).join(", ")}</div>` : ''}
         </div>
         <div style="display:flex; justify-content:center; gap:8px; margin-top:16px;">
-            <button class="ctrl-btn ctrl-btn-primary" onclick="closeModal('memberProfileModal'); openMemberRequestModal('${m.id}', 'ADD');">➕ संतान जोड़ें</button>
-            <button class="ctrl-btn" onclick="closeModal('memberProfileModal'); openMemberRequestModal('${m.id}', 'EDIT');">✏️ विवरण / फोटो अपडेट करें</button>
+            <button class="ctrl-btn ctrl-btn-primary" onclick="closeModal('memberProfileModal'); openMemberRequestModal('${m.id}', 'ADD');">➕ ${CURRENT_LANG === 'en' ? 'Add Child' : 'संतान जोड़ें'}</button>
+            <button class="ctrl-btn" onclick="closeModal('memberProfileModal'); openMemberRequestModal('${m.id}', 'EDIT');">✏️ ${CURRENT_LANG === 'en' ? 'Edit / Photo' : 'विवरण / फोटो सुधारें'}</button>
         </div>
     `;
     openModal("memberProfileModal");
 }
 
 /* =========================================================================
-   6. VIEW 2 & 3: HIGH-RESOLUTION D3.JS 360° RADIAL & HORIZONTAL CHART
+   7. VIEW 2 & 3: HIGH-RESOLUTION D3.JS 360° RADIAL & HORIZONTAL CHART
 ========================================================================= */
 function renderD3Diagram(mode = "horizontal") {
     CURRENT_D3_MODE = mode;
@@ -401,7 +509,7 @@ function renderD3Diagram(mode = "horizontal") {
             .style("paint-order", "stroke")
             .style("stroke", "var(--card-bg)")
             .style("stroke-width", "3.5px")
-            .text(d => d.data.name);
+            .text(d => getDisplayName(d.data));
 
         svg.call(D3_ZOOM_BEHAVIOR.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.32));
     } else {
@@ -440,7 +548,7 @@ function renderD3Diagram(mode = "horizontal") {
             .style("paint-order", "stroke")
             .style("stroke", "var(--card-bg)")
             .style("stroke-width", "4px")
-            .text(d => d.data.name);
+            .text(d => getDisplayName(d.data));
 
         svg.call(D3_ZOOM_BEHAVIOR.transform, d3.zoomIdentity.translate(140, height / 2).scale(0.65));
     }
@@ -457,7 +565,7 @@ function resetD3Zoom() {
 }
 
 /* =========================================================================
-   7. VIEW 4: GENERATIONAL CARD VIEW (WITH MEMBER PHOTOS)
+   8. VIEW 4, 5, 6, 7, 8: CARDS, ANALYTICS, KINSHIP, GEOGRAPHY & COMMENTS
 ========================================================================= */
 function renderCardView() {
     const maxGen = Math.max(...FLAT_MEMBERS.map(m => m.gen));
@@ -468,15 +576,15 @@ function renderCardView() {
             <div class="gen-row">
                 <div class="gen-header">
                     <div class="gen-title">👑 ${getGenLabelHi(g)}</div>
-                    <span class="gen-count-badge">${genMembers.length} सदस्य</span>
+                    <span class="gen-count-badge">${genMembers.length} ${CURRENT_LANG === 'en' ? 'Members' : 'सदस्य'}</span>
                 </div>
                 <div class="member-avatar-grid">
                     ${genMembers.map(m => `
                         <div class="avatar-card" onclick="openMemberProfileModal('${m.id}')">
                             ${renderMemberAvatarHtml(m, "avatar-photo-lg")}
                             <div>
-                                <div class="avatar-name">${m.name}</div>
-                                <div style="font-size:0.74rem; color:var(--text-muted);">${m.branch}</div>
+                                <div class="avatar-name">${getDisplayName(m)}</div>
+                                <div style="font-size:0.74rem; color:var(--text-muted);">${getBranchLabelDisplay(m.branch)}</div>
                                 ${m.notes ? `<div style="font-size:0.74rem; color:var(--primary); font-weight:700;">${m.notes}</div>` : ''}
                             </div>
                         </div>
@@ -488,9 +596,6 @@ function renderCardView() {
     document.getElementById("roadmapContainer").innerHTML = html;
 }
 
-/* =========================================================================
-   8. VIEW 5, 6, 7, 8: PICTORIAL ANALYTICS, KINSHIP, GEOGRAPHY & COMMENTS
-========================================================================= */
 function buildPictorialBranchDonutSvg(branchCounts, total) {
     const colors = ["#9A3412", "#D97706", "#059669", "#0284C7", "#7C3AED", "#BE185D"];
     let cumulativePercent = 0;
@@ -514,7 +619,7 @@ function buildPictorialBranchDonutSvg(branchCounts, total) {
     const legend = branchCounts.map((b, i) => `
         <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:700;">
             <span style="width:12px; height:12px; border-radius:3px; background:${colors[i % colors.length]}; display:inline-block;"></span>
-            <span>${b.name.replace('शाखा ', '')}: ${b.count} (${b.pct}%)</span>
+            <span>${getBranchLabelDisplay(b.name)}: ${b.count} (${b.pct}%)</span>
         </div>
     `).join("");
 
@@ -542,10 +647,10 @@ function renderAnalyticsDashboard() {
     document.getElementById("stat-gens").innerText = maxGen;
 
     document.getElementById("analyticsKpiGrid").innerHTML = `
-        <div class="kpi-card"><div class="kpi-value">${totalMembers}</div><div class="kpi-label">कुल पंजीकृत सदस्य</div></div>
-        <div class="kpi-card"><div class="kpi-value">${mainBranches.length}</div><div class="kpi-label">मुख्य वंश शाखाएँ</div></div>
-        <div class="kpi-card"><div class="kpi-value">${maxGen}</div><div class="kpi-label">कुल पीढ़ियाँ (Generations)</div></div>
-        <div class="kpi-card"><div class="kpi-value">${uniqueLocations}</div><div class="kpi-label">निवास शहर / क्षेत्र</div></div>
+        <div class="kpi-card"><div class="kpi-value">${totalMembers}</div><div class="kpi-label">${CURRENT_LANG === 'en' ? 'Total Members' : 'कुल पंजीकृत सदस्य'}</div></div>
+        <div class="kpi-card"><div class="kpi-value">${mainBranches.length}</div><div class="kpi-label">${CURRENT_LANG === 'en' ? 'Main Branches' : 'मुख्य वंश शाखाएँ'}</div></div>
+        <div class="kpi-card"><div class="kpi-value">${maxGen}</div><div class="kpi-label">${CURRENT_LANG === 'en' ? 'Generations' : 'कुल पीढ़ियाँ'}</div></div>
+        <div class="kpi-card"><div class="kpi-value">${uniqueLocations}</div><div class="kpi-label">${CURRENT_LANG === 'en' ? 'Locations' : 'निवास क्षेत्र'}</div></div>
     `;
 
     const branchStats = mainBranches.map(b => {
@@ -558,7 +663,7 @@ function renderAnalyticsDashboard() {
 
     document.getElementById("branchComparisonBars").innerHTML = donutHtml + branchStats.map(b => `
         <div class="bar-row">
-            <div class="bar-label-line"><span>${b.name}</span><span>${b.count} सदस्य (${b.pct}%)</span></div>
+            <div class="bar-label-line"><span>${getBranchLabelDisplay(b.name)}</span><span>${b.count} (${b.pct}%)</span></div>
             <div class="bar-track"><div class="bar-fill" style="width:${Math.max(b.pct, 6)}%;"></div></div>
         </div>
     `).join("");
@@ -569,7 +674,7 @@ function renderAnalyticsDashboard() {
         const pct = Math.round((count / totalMembers) * 100);
         genBarsHtml += `
             <div class="bar-row">
-                <div class="bar-label-line"><span>${getGenLabelHi(g)}</span><span>${count} सदस्य (${pct}%)</span></div>
+                <div class="bar-label-line"><span>${getGenLabelHi(g)}</span><span>${count} (${pct}%)</span></div>
                 <div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct, 4)}%;"></div></div>
             </div>
         `;
@@ -578,7 +683,7 @@ function renderAnalyticsDashboard() {
 }
 
 function populateKinshipSelectors() {
-    const optionsHtml = FLAT_MEMBERS.map(m => `<option value="${m.id}">${m.name} (पीढ़ी ${m.gen} - ${m.branch})</option>`).join("");
+    const optionsHtml = FLAT_MEMBERS.map(m => `<option value="${m.id}">${getDisplayName(m)} (${getGenLabelHi(m.gen)} - ${getBranchLabelDisplay(m.branch)})</option>`).join("");
     const selA = document.getElementById("kinMemberA");
     const selB = document.getElementById("kinMemberB");
     if (selA && selB) {
@@ -597,7 +702,7 @@ function calculateKinship() {
     if (!memA || !memB) return;
 
     if (idA === idB) {
-        resBox.innerHTML = `<div class="analytics-panel" style="text-align:center;">आपने दोनों स्थानों पर एक ही सदस्य (<strong>${memA.name}</strong>) को चुना है।</div>`;
+        resBox.innerHTML = `<div class="analytics-panel" style="text-align:center;">आपने दोनों स्थानों पर एक ही सदस्य (<strong>${getDisplayName(memA)}</strong>) को चुना है।</div>`;
         return;
     }
 
@@ -638,11 +743,11 @@ function calculateKinship() {
         <div class="analytics-panel" style="text-align:center; border-top:4px solid var(--primary);">
             <div style="font-size:0.85rem; color:var(--text-muted);">आपसी संबंध परिणाम</div>
             <h3 style="color:var(--primary); font-size:1.35rem; margin:6px 0;">${relationTitle}</h3>
-            <p style="font-size:0.9rem;">साझे पूर्वज (Common Ancestor): <strong>${commonAncestor.name} (पीढ़ी ${commonAncestor.gen})</strong></p>
+            <p style="font-size:0.9rem;">साझे पूर्वज (Common Ancestor): <strong>${getDisplayName(commonAncestor)} (${getGenLabelHi(commonAncestor.gen)})</strong></p>
             <div class="path-chain-box">
                 ${fullChain.map((step, idx) => `
                     <span style="padding:6px 12px; border-radius:8px; background:${step.id === commonAncestor.id ? 'var(--primary)' : 'var(--card-bg)'}; color:${step.id === commonAncestor.id ? '#fff' : 'var(--text)'}; border:1px solid var(--border); font-weight:700; font-size:0.85rem;">
-                        ${step.name} (पीढ़ी ${step.gen})
+                        ${getDisplayName(step)} (${getGenLabelHi(step.gen)})
                     </span>
                     ${idx < fullChain.length - 1 ? `<span style="color:var(--primary); font-weight:bold;">➔</span>` : ''}
                 `).join("")}
@@ -664,7 +769,7 @@ function renderGeographyView() {
             <h4 style="color:var(--primary); margin-bottom:8px;">📍 ${loc}</h4>
             <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">कुल सदस्य: ${members.length}</div>
             <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                ${members.map(m => `<span class="gen-badge" style="cursor:pointer; padding:4px 9px;" onclick="focusOnMember('${m.id}')">${m.name}</span>`).join("")}
+                ${members.map(m => `<span class="gen-badge" style="cursor:pointer; padding:4px 9px;" onclick="focusOnMember('${m.id}')">${getDisplayName(m)}</span>`).join("")}
             </div>
         </div>
     `).join("");
@@ -733,7 +838,6 @@ function changeTheme(themeName) {
     }
 }
 
-// एक ही जगह से सभी 8 व्यूज़ चुनने का फंक्शन
 function selectUnifiedView(viewChoice) {
     const mainSelect = document.getElementById("unifiedViewSelect");
     const sideSelect = document.getElementById("sidebarViewPicker");
@@ -753,7 +857,6 @@ function selectUnifiedView(viewChoice) {
     const target = document.getElementById(`view-${sectionKey}`);
     if (target) target.classList.add("active");
 
-    // होम के अलावा किसी भी अन्य व्यू में होने पर "⬅️ वापस होम (मुख्य वृक्ष) पर जाएँ" बटन दिखाएँ
     const backBtn = document.getElementById("backToHomeBtn");
     if (backBtn) {
         const isDefaultHome = (viewChoice === "tree" && CURRENT_BRANCH_FILTER === "ALL");
@@ -773,7 +876,6 @@ function switchView(viewKey) {
     }
 }
 
-// 🏠 होम / वापस मुख्य वृक्ष पर जाने का फंक्शन
 function goHomeView() {
     CURRENT_BRANCH_FILTER = "ALL";
     const branchSel = document.getElementById("branchSelect");
@@ -784,7 +886,6 @@ function goHomeView() {
     const suggBox = document.getElementById("searchSuggestions");
     if (suggBox) suggBox.style.display = "none";
 
-    document.getElementById("currentViewLabel").innerHTML = "📌 किसी भी नाम पर क्लिक करके फोटो व वंश-पथ देखें | ➕ दबाकर नई संतान जोड़ें";
     selectUnifiedView("tree");
     renderTreeView();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -820,7 +921,7 @@ function openAboutModal() {
 }
 
 /* =========================================================================
-   10. PUBLIC ADD / EDIT REQUEST QUEUE
+   10. ADD / EDIT MEMBER (2 BOXES: HINDI + ENGLISH & DIRECT ADD IF ADMIN LOGGED IN)
 ========================================================================= */
 let PENDING_REQUESTS = [];
 const savedPending = localStorage.getItem("NARAYAN_MAHTO_PENDING_FINAL");
@@ -840,15 +941,38 @@ function openMemberRequestModal(targetId, actionType) {
     document.getElementById("editTargetId").value = targetId;
     document.getElementById("editActionType").value = actionType;
 
+    const noticeEl = document.getElementById("editModalNoticeText");
+    const submitBtn = document.getElementById("editModalSubmitBtn");
+    const subByGroup = document.getElementById("submittedByGroup");
+
+    // यदि Admin लॉगिन सक्रिय है, तो डायरेक्ट सेव मोड दिखाएँ
+    if (IS_ADMIN_LOGGED_IN) {
+        if (noticeEl) {
+            noticeEl.style.color = "#059669";
+            noticeEl.innerHTML = "🟢 <strong>Admin Mode सक्रिय:</strong> आपके द्वारा किया गया बदलाव बिना किसी पेंडिंग कतार के <strong>सीधे मुख्य वंशावली में तुरंत जुड़ जाएगा!</strong>";
+        }
+        if (submitBtn) submitBtn.innerText = "⚡ सीधे वंशावली में जोड़ें / सेव करें (Direct Save)";
+        if (subByGroup) subByGroup.style.display = "none";
+    } else {
+        if (noticeEl) {
+            noticeEl.style.color = "var(--text-muted)";
+            noticeEl.innerHTML = "ℹ️ यह बदलाव <strong>Admin</strong> द्वारा सत्यापित और Approve किए जाने के बाद मुख्य वंशावली में दिखाई देगा।";
+        }
+        if (submitBtn) submitBtn.innerText = "✅ एडमिन स्वीकृति हेतु भेजें";
+        if (subByGroup) subByGroup.style.display = "block";
+    }
+
     if (actionType === "ADD") {
-        document.getElementById("editModalTitle").innerText = `➕ "${member.name}" की संतान जोड़ने का अनुरोध`;
+        document.getElementById("editModalTitle").innerText = `➕ "${getDisplayName(member)}" की संतान जोड़ें`;
         document.getElementById("reqMemberName").value = "";
+        document.getElementById("reqMemberNameEn").value = "";
         document.getElementById("reqMemberPhoto").value = "";
         document.getElementById("reqMemberLocation").value = member.location || "आशानगर, बिहार शरीफ";
         document.getElementById("reqMemberNotes").value = "";
     } else {
-        document.getElementById("editModalTitle").innerText = `✏️ "${member.name}" के विवरण / फोटो में सुधार अनुरोध`;
-        document.getElementById("reqMemberName").value = member.name;
+        document.getElementById("editModalTitle").innerText = `✏️ "${getDisplayName(member)}" के विवरण / फोटो में सुधार`;
+        document.getElementById("reqMemberName").value = member.name || "";
+        document.getElementById("reqMemberNameEn").value = member.en || "";
         document.getElementById("reqMemberPhoto").value = member.photo || `photos/${member.id}.jpg`;
         document.getElementById("reqMemberLocation").value = member.location || "";
         document.getElementById("reqMemberNotes").value = member.notes || "";
@@ -859,17 +983,63 @@ function openMemberRequestModal(targetId, actionType) {
 async function submitEditRequestForApproval() {
     const targetId = document.getElementById("editTargetId").value;
     const actionType = document.getElementById("editActionType").value;
-    const name = document.getElementById("reqMemberName").value.trim();
+    const nameHi = document.getElementById("reqMemberName").value.trim();
+    const nameEn = document.getElementById("reqMemberNameEn").value.trim();
     const photo = document.getElementById("reqMemberPhoto").value.trim();
     const location = document.getElementById("reqMemberLocation").value.trim() || "आशानगर, बिहार शरीफ";
     const notes = document.getElementById("reqMemberNotes").value.trim();
-    const submittedBy = document.getElementById("reqSubmittedBy").value.trim();
+    const submittedBy = IS_ADMIN_LOGGED_IN ? "Admin" : document.getElementById("reqSubmittedBy").value.trim();
 
-    if (!name || !submittedBy) {
-        alert("कृपया सदस्य का नाम और निवेदक (अपना) नाम अवश्य भरें।");
+    if (!nameHi && !nameEn) {
+        alert("कृपया सदस्य का नाम (हिंदी या English में) अवश्य भरें।");
+        return;
+    }
+    if (!IS_ADMIN_LOGGED_IN && !submittedBy) {
+        alert("कृपया निवेदक (अपना) नाम अवश्य भरें।");
         return;
     }
 
+    const finalNameHi = nameHi || nameEn;
+    const finalNameEn = nameEn || "";
+
+    // ⚡ CASE 1: ADMIN IS LOGGED IN -> DIRECT ADD / EDIT (NO APPROVAL QUEUE)
+    if (IS_ADMIN_LOGGED_IN) {
+        const targetNode = findNodeRecursive(FAMILY_TREE_DATA, targetId);
+        if (!targetNode) {
+            alert("मूल सदस्य डेटा में नहीं मिला।");
+            return;
+        }
+
+        if (actionType === "ADD") {
+            if (!targetNode.children) targetNode.children = [];
+            const newChildId = `m_${Date.now()}`;
+            targetNode.children.push({
+                id: newChildId,
+                name: finalNameHi,
+                en: finalNameEn,
+                gen: (targetNode.gen || 1) + 1,
+                branch: targetNode.branch || "मूल शाखा",
+                location: location,
+                notes: notes,
+                photo: photo,
+                children: []
+            });
+        } else if (actionType === "EDIT") {
+            targetNode.name = finalNameHi;
+            targetNode.en = finalNameEn;
+            targetNode.location = location;
+            targetNode.notes = notes;
+            if (photo !== undefined) targetNode.photo = photo;
+        }
+
+        localStorage.setItem("NARAYAN_MAHTO_TREE_FINAL", JSON.stringify(FAMILY_TREE_DATA));
+        closeModal("memberEditModal");
+        renderAllViews();
+        alert(`✅ Admin Direct Save: "${finalNameHi}" को सीधे वंशावली में जोड़/अपडेट कर दिया गया है! (स्थायी करने हेतु '📥 vansh-data.js डाउनलोड' कर GitHub पर अपलोड करें)`);
+        return;
+    }
+
+    // ⏳ CASE 2: PUBLIC USER -> SEND FOR ADMIN APPROVAL & EMAIL ALERT
     const targetMember = FLAT_MEMBERS.find(m => m.id === targetId);
     const newReq = {
         reqId: "req-" + Date.now(),
@@ -878,7 +1048,8 @@ async function submitEditRequestForApproval() {
         targetGen: targetMember ? targetMember.gen : 1,
         targetBranch: targetMember ? targetMember.branch : "मूल शाखा",
         actionType,
-        name,
+        name: finalNameHi,
+        en: finalNameEn,
         photo,
         location,
         notes,
@@ -886,13 +1057,11 @@ async function submitEditRequestForApproval() {
         timestamp: new Date().toLocaleString("hi-IN")
     };
 
-    // 1. लोकल ब्राउज़र में सेव करें
     PENDING_REQUESTS.push(newReq);
     localStorage.setItem("NARAYAN_MAHTO_PENDING_FINAL", JSON.stringify(PENDING_REQUESTS));
     updatePendingBadge();
     closeModal("memberEditModal");
 
-    // 2. Google Apps Script के ज़रिए एडमिन को तुरंत ईमेल अलर्ट भेजें और क्लाउड पर सेव करें
     if (GAS_BACKEND_OTP_URL && !GAS_BACKEND_OTP_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) {
         try {
             const url = `${GAS_BACKEND_OTP_URL}?action=submitEdit&payload=${encodeURIComponent(JSON.stringify(newReq))}`;
@@ -905,39 +1074,14 @@ async function submitEditRequestForApproval() {
     alert("✅ आपका अनुरोध सफलतापूर्वक दर्ज हो गया है और एडमिन को ईमेल अलर्ट भेज दिया गया है! सत्यापन के बाद यह वंशावली में जुड़ जाएगा।");
 }
 
-// क्लाउड से पेंडिंग अनुरोधों को एडमिन पैनल में सिंक करने का सहायक फंक्शन
-async function syncCloudPendingRequests() {
-    if (!GAS_BACKEND_OTP_URL || GAS_BACKEND_OTP_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) return;
-    try {
-        const res = await fetch(`${GAS_BACKEND_OTP_URL}?action=getPending`);
-        const data = await res.json();
-        if (data.status === "ok" && Array.isArray(data.items)) {
-            const existingIds = new Set(PENDING_REQUESTS.map(r => r.reqId));
-            data.items.forEach(item => {
-                if (!existingIds.has(item.reqId)) {
-                    PENDING_REQUESTS.push(item);
-                }
-            });
-            localStorage.setItem("NARAYAN_MAHTO_PENDING_FINAL", JSON.stringify(PENDING_REQUESTS));
-            updatePendingBadge();
-            if (IS_ADMIN_LOGGED_IN) renderPendingApprovals();
-        }
-    } catch (e) {}
-}
-
-// पेज खुलते समय क्लाउड से नए अनुरोधों की संख्या अपने-आप चेक करें
-window.addEventListener("DOMContentLoaded", () => {
-    setTimeout(syncCloudPendingRequests, 1200);
-});
-
 /* =========================================================================
-   11. ADMIN SECURITY: SHA-256, OTP -> PASSWORD CHANGE & PERMANENT HASH SAVE
+   11. ADMIN SECURITY: SHA-256, OTP -> PASSWORD CHANGE & ADMIN LOGOUT
 ========================================================================= */
-// प्राथमिकता: 1. LocalStorage हैश -> 2. vansh-data.js का हैश -> 3. डिफ़ॉल्ट ("admin") हैश
 let ADMIN_PASSWORD_SHA256 =
     localStorage.getItem("ADMIN_CUSTOM_HASH_FINAL") ||
     (typeof MASTER_ADMIN_HASH !== "undefined" ? MASTER_ADMIN_HASH : "") ||
     "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
 const GAS_BACKEND_OTP_URL = "https://script.google.com/macros/s/AKfycbxa-6-aJ9FJI1UthD7dX4a_smXrkvKMmNMJfeubfopw0N24CayJ-bxEjlNQa5bvgtmQbg/exec";
 
 let IS_ADMIN_LOGGED_IN = false;
@@ -969,6 +1113,15 @@ function syncAdminSessionUI() {
     if (sideLogoutBtn) sideLogoutBtn.style.display = IS_ADMIN_LOGGED_IN ? "flex" : "none";
     if (sideAdminTxt) {
         sideAdminTxt.innerText = IS_ADMIN_LOGGED_IN ? "🟢 एडमिन डैशबोर्ड (Active)" : "🔒 एडमिन पैनल (Admin Login)";
+    }
+
+    // एडमिन लॉगिन होते ही Edit Mode के ➕ और ✏️ बटन अपने-आप चालू कर दें ताकि डायरेक्ट एंट्री हो सके
+    if (IS_ADMIN_LOGGED_IN && !document.body.classList.contains("edit-mode-enabled")) {
+        document.body.classList.add("edit-mode-enabled");
+        const btn = document.getElementById("toggleEditModeBtn");
+        const statusTxt = document.getElementById("editModeStatusText");
+        if (btn) btn.classList.add("active-mode");
+        if (statusTxt) statusTxt.innerText = "सक्रिय (ON)";
     }
 }
 
@@ -1036,7 +1189,6 @@ function unlockAdminDashboard() {
     renderPendingApprovals();
 }
 
-// 🚪 एडमिन लॉगआउट (Admin Logout) फंक्शन
 function adminLogout() {
     IS_ADMIN_LOGGED_IN = false;
     syncAdminSessionUI();
@@ -1077,7 +1229,6 @@ async function requestBackendOTP() {
     }
 }
 
-// ✅ OTP सत्यापित होने के तुरंत बाद पासवर्ड बदलने का विकल्प खोलें
 async function verifyBackendOTP() {
     const otpCode = document.getElementById("adminOtpInput").value.trim();
     const authMsg = document.getElementById("adminAuthMsg");
@@ -1099,7 +1250,6 @@ async function verifyBackendOTP() {
             IS_ADMIN_LOGGED_IN = true;
             syncAdminSessionUI();
 
-            // OTP सही होते ही तुरंत पासवर्ड बदलने (Change Password) का सेक्शन खोलें
             document.getElementById("adminLoginSection").style.display = "none";
             document.getElementById("adminDashboardSection").style.display = "none";
             document.getElementById("pwdChangeSubtext").innerText = "✅ OTP सफलतापूर्वक सत्यापित हो गया! अब आप यहाँ अपना नया एडमिन पासवर्ड सेट कर सकते हैं:";
@@ -1117,7 +1267,6 @@ async function verifyBackendOTP() {
     }
 }
 
-// डैशबोर्ड के अंदर से भी पासवर्ड बदलने का विकल्प खोलें
 function openPasswordChangeBoxFromDashboard() {
     document.getElementById("adminDashboardSection").style.display = "none";
     document.getElementById("pwdChangeSubtext").innerText = "यहाँ अपना नया एडमिन पासवर्ड दर्ज करें (यह SHA-256 एन्क्रिप्शन के साथ सेव होगा):";
@@ -1131,7 +1280,6 @@ function skipPasswordChangeToDashboard() {
     unlockAdminDashboard();
 }
 
-// 🔑 नया पासवर्ड SHA-256 में हैश करके सेव करने और कॉपी बॉक्स दिखाने का फंक्शन
 async function saveNewAdminPassword() {
     const p1 = document.getElementById("newAdminPass1").value;
     const p2 = document.getElementById("newAdminPass2").value;
@@ -1159,7 +1307,7 @@ async function saveNewAdminPassword() {
                 ✅ नया पासवर्ड इस ब्राउज़र में सेव हो गया है!
             </div>
             <div style="font-size:0.78rem; color:#047857; margin-bottom:6px;">
-                📌 <strong>सभी मोबाइल/कंप्यूटर के लिए स्थायी करने हेतु:</strong> नीचे दिया गया SHA-256 हैश कॉपी करके <code>vansh-engine.js</code> में डालें, या सीधे डैशबोर्ड से <strong>"📥 vansh-data.js डाउनलोड"</strong> करके GitHub पर अपलोड कर दें:
+                📌 <strong>सभी मोबाइल/कंप्यूटर के लिए स्थायी करने हेतु:</strong> नीचे दिया गया SHA-256 हैश कॉपी करें या सीधे डैशबोर्ड से <strong>"📥 vansh-data.js डाउनलोड"</strong> करके GitHub पर अपलोड कर दें:
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
                 <input type="text" id="generatedHashBox" class="form-input" value="${newHash}" readonly style="font-size:0.75rem; font-family:monospace; background:#FFFFFF; padding:6px 8px;">
@@ -1180,7 +1328,6 @@ function copyGeneratedHash() {
         alert("✅ नया SHA-256 पासवर्ड हैश कॉपी हो गया है!");
     });
 }
-
 
 /* =========================================================================
    12. ADMIN APPROVAL WORKFLOW & MODULAR vansh-data.js DOWNLOADER
@@ -1208,7 +1355,7 @@ function renderPendingApprovals() {
                 <span>${req.timestamp}</span>
             </div>
             <div style="margin:6px 0; font-size:0.95rem;">
-                संदर्भ सदस्य: <strong>${req.targetName}</strong> ➔ प्रस्तावित नाम: <strong style="color:var(--primary);">${req.name}</strong>
+                संदर्भ सदस्य: <strong>${req.targetName}</strong> ➔ प्रस्तावित नाम: <strong style="color:var(--primary);">${req.name}</strong> ${req.en ? `(${req.en})` : ''}
             </div>
             <div style="font-size:0.82rem; color:var(--text-muted);">
                 📍 स्थान: ${req.location} | 🖼️ फोटो: ${req.photo || '—'} | 📝 नोट: ${req.notes || '—'} | 👤 निवेदक: <strong>${req.submittedBy}</strong>
@@ -1230,7 +1377,6 @@ function approveRequest(reqId) {
     if (!targetNode) {
         alert("मूल सदस्य डेटा में नहीं मिला।");
         return;
-fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(reqId)}`).catch(() => {});
     }
 
     if (req.actionType === "ADD") {
@@ -1239,7 +1385,7 @@ fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(re
         targetNode.children.push({
             id: newChildId,
             name: req.name,
-            en: "",
+            en: req.en || "",
             gen: (targetNode.gen || 1) + 1,
             branch: targetNode.branch || "मूल शाखा",
             location: req.location || "आशानगर, बिहार शरीफ",
@@ -1249,6 +1395,7 @@ fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(re
         });
     } else if (req.actionType === "EDIT") {
         targetNode.name = req.name;
+        if (req.en !== undefined) targetNode.en = req.en;
         targetNode.location = req.location;
         targetNode.notes = req.notes;
         if (req.photo !== undefined) targetNode.photo = req.photo;
@@ -1258,6 +1405,8 @@ fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(re
     localStorage.setItem("NARAYAN_MAHTO_PENDING_FINAL", JSON.stringify(PENDING_REQUESTS));
     localStorage.setItem("NARAYAN_MAHTO_TREE_FINAL", JSON.stringify(FAMILY_TREE_DATA));
 
+    fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(reqId)}`).catch(() => {});
+
     updatePendingBadge();
     renderPendingApprovals();
     renderAllViews();
@@ -1266,9 +1415,9 @@ fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(re
 function rejectRequest(reqId) {
     PENDING_REQUESTS = PENDING_REQUESTS.filter(r => r.reqId !== reqId);
     localStorage.setItem("NARAYAN_MAHTO_PENDING_FINAL", JSON.stringify(PENDING_REQUESTS));
+    fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(reqId)}`).catch(() => {});
     updatePendingBadge();
     renderPendingApprovals();
-fetch(`${GAS_BACKEND_OTP_URL}?action=removePending&reqId=${encodeURIComponent(reqId)}`).catch(() => {});
 }
 
 function downloadMasterDataJS() {
@@ -1298,7 +1447,72 @@ let FAMILY_COMMENTS_DATA = ${JSON.stringify(FAMILY_COMMENTS_DATA, null, 4)};
 }
 
 /* =========================================================================
-   13. SINGLE-PAGE FAST & ULTRA-HD PRINT, PDF & PNG STUDIO
+   13. LIVE VISITOR COUNTER (1,250+ UNIQUE SESSION) & CLOUD PENDING SYNC
+========================================================================= */
+async function initLiveVisitorCounter() {
+    const totalEl = document.getElementById("stat-visits");
+    const todayEl = document.getElementById("stat-today-badge");
+
+    const alreadyCounted = sessionStorage.getItem("VANSH_VISIT_SESSION_COUNTED");
+    const action = alreadyCounted ? "getVisitor" : "hitVisitor";
+
+    try {
+        if (GAS_BACKEND_OTP_URL && !GAS_BACKEND_OTP_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) {
+            const res = await fetch(`${GAS_BACKEND_OTP_URL}?action=${action}`);
+            const data = await res.json();
+            if (data && data.status === "ok") {
+                sessionStorage.setItem("VANSH_VISIT_SESSION_COUNTED", "1");
+                localStorage.setItem("VANSH_CACHED_TOTAL_VISITS", data.total.toString());
+                localStorage.setItem("VANSH_CACHED_TODAY_VISITS", data.today.toString());
+
+                if (totalEl) totalEl.innerText = Number(data.total).toLocaleString("en-IN");
+                if (todayEl) {
+                    todayEl.dataset.count = data.today;
+                    todayEl.innerText = CURRENT_LANG === "en" ? `Today: ${data.today}` : `आज: ${data.today}`;
+                }
+                return;
+            }
+        }
+    } catch (e) {}
+
+    // Fallback if offline or before GAS redeploy
+    let localTotal = parseInt(localStorage.getItem("VANSH_CACHED_TOTAL_VISITS") || "1250", 10);
+    let localToday = parseInt(localStorage.getItem("VANSH_CACHED_TODAY_VISITS") || "3", 10);
+    if (!alreadyCounted) {
+        localTotal += 1;
+        localToday += 1;
+        sessionStorage.setItem("VANSH_VISIT_SESSION_COUNTED", "1");
+        localStorage.setItem("VANSH_CACHED_TOTAL_VISITS", localTotal.toString());
+        localStorage.setItem("VANSH_CACHED_TODAY_VISITS", localToday.toString());
+    }
+    if (totalEl) totalEl.innerText = Number(localTotal).toLocaleString("en-IN");
+    if (todayEl) {
+        todayEl.dataset.count = localToday;
+        todayEl.innerText = CURRENT_LANG === "en" ? `Today: ${localToday}` : `आज: ${localToday}`;
+    }
+}
+
+async function syncCloudPendingRequests() {
+    if (!GAS_BACKEND_OTP_URL || GAS_BACKEND_OTP_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) return;
+    try {
+        const res = await fetch(`${GAS_BACKEND_OTP_URL}?action=getPending`);
+        const data = await res.json();
+        if (data.status === "ok" && Array.isArray(data.items)) {
+            const existingIds = new Set(PENDING_REQUESTS.map(r => r.reqId));
+            data.items.forEach(item => {
+                if (!existingIds.has(item.reqId)) {
+                    PENDING_REQUESTS.push(item);
+                }
+            });
+            localStorage.setItem("NARAYAN_MAHTO_PENDING_FINAL", JSON.stringify(PENDING_REQUESTS));
+            updatePendingBadge();
+            if (IS_ADMIN_LOGGED_IN) renderPendingApprovals();
+        }
+    } catch (e) {}
+}
+
+/* =========================================================================
+   14. SINGLE-PAGE FAST & ULTRA-HD PRINT, PDF & PNG STUDIO
 ========================================================================= */
 function triggerSinglePageHDPrint() {
     toggleSidebar(false);
@@ -1312,7 +1526,7 @@ function buildSinglePagePosterGridHtml() {
     const columnsHtml = branches.map(branchNode => `
         <div style="flex:1; min-width:340px; background:#FFFDF9; border:1.5px solid #CBD5E1; border-top:4px solid #9A3412; border-radius:10px; padding:12px;">
             <div style="text-align:center; font-weight:800; font-size:15px; color:#7C2D12; background:#FEF3C7; padding:6px 10px; border-radius:6px; margin-bottom:10px; border:1px solid #F59E0B;">
-                🌿 ${branchNode.name} (${branchNode.branch})
+                🌿 ${getDisplayName(branchNode)} (${getBranchLabelDisplay(branchNode.branch)})
             </div>
             <ul class="tree" style="padding-left:0; margin:0;">
                 ${(branchNode.children || []).map(c => buildClassicTreeHtml(c)).join("")}
@@ -1323,7 +1537,7 @@ function buildSinglePagePosterGridHtml() {
     return `
         <div style="text-align:center; margin-bottom:16px;">
             <div style="display:inline-block; background:#7C2D12; color:#FFFFFF; font-weight:800; font-size:17px; padding:8px 24px; border-radius:8px; border:2px solid #FDE68A;">
-                👑 मूल पुरुष: स्व. नारायण महतो (१ली पीढ़ी) ➔ स्व. चमन महतो (२री पीढ़ी)
+                👑 ${CURRENT_LANG === 'en' ? 'Root Ancestor: Late Narayan Mahto (Gen 1) ➔ Late Chaman Mahto (Gen 2)' : 'मूल पुरुष: स्व. नारायण महतो (१ली पीढ़ी) ➔ स्व. चमन महतो (२री पीढ़ी)'}
             </div>
         </div>
         <div style="display:flex; flex-direction:row; align-items:flex-start; gap:14px; width:max-content;">
@@ -1386,7 +1600,7 @@ function buildPureVectorD3Svg(mode, customTitle, container) {
             .attr("paint-order", "stroke")
             .attr("stroke", "#FFFFFF")
             .attr("stroke-width", "4px")
-            .text(d => d.data.name);
+            .text(d => getDisplayName(d.data));
     } else {
         const dx = 36;
         const dy = 290;
@@ -1424,7 +1638,7 @@ function buildPureVectorD3Svg(mode, customTitle, container) {
             .attr("paint-order", "stroke")
             .attr("stroke", "#FFFFFF")
             .attr("stroke-width", "4px")
-            .text(d => d.data.name);
+            .text(d => getDisplayName(d.data));
     }
 
     const chartBox = chartG.node().getBBox();
@@ -1733,7 +1947,7 @@ async function exportSinglePageChart(format) {
 }
 
 /* =========================================================================
-   14. INITIALIZE ALL VIEWS ON PAGE LOAD
+   15. INITIALIZE ALL VIEWS ON PAGE LOAD
 ========================================================================= */
 function renderAllViews() {
     rebuildFlatIndex(FAMILY_TREE_DATA);
@@ -1751,7 +1965,9 @@ function renderAllViews() {
 window.addEventListener("DOMContentLoaded", () => {
     const savedTheme = localStorage.getItem("VANSHAWALI_THEME_FINAL") || "classic";
     changeTheme(savedTheme);
-    renderAllViews();
+    setLanguage(CURRENT_LANG);
+    initLiveVisitorCounter();
+    setTimeout(syncCloudPendingRequests, 1200);
 
     document.addEventListener("click", (e) => {
         if (!e.target.closest(".search-wrap")) {
