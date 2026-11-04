@@ -30,6 +30,7 @@
         "email": "ankitranjan97@gmail.com"
       }
     }
+    }
     </script>
 
     <!-- FONTS & EXTERNAL LIBRARIES (D3.JS, HTML2CANVAS, JSPDF) -->
@@ -44,8 +45,8 @@
 <body>
 
     <!-- EDIT MODE NOTICE BANNER -->
-    <div class="edit-mode-banner no-print">
-        ✏️ <strong>संपादन मोड (Edit Mode) सक्रिय है:</strong> किसी भी सदस्य के कार्ड पर ➕ (संतान जोड़ें) या ✏️ (सुधार/फोटो अपडेट करें) दबाकर नया सुझाव भेजें।
+    <div class="edit-mode-banner no-print" id="editModeBanner">
+        ✏️ <strong>संपादन मोड (Edit Mode) सक्रिय है:</strong> किसी भी सदस्य के कार्ड पर ➕ (संतान जोड़ें) या ✏️ (सुधार/फोटो अपडेट करें) दबाएँ।
     </div>
 
     <!-- HIDDEN LEFT SIDEBAR DRAWER -->
@@ -53,20 +54,29 @@
     <aside class="sidebar-drawer no-print" id="sidebarDrawer">
         <div class="sidebar-header">
             <div>
-                <div style="font-weight: 800; font-size: 1.05rem;">⚙️ वंशावली टूल्स एवं मेनू</div>
-                <div style="font-size: 0.78rem; color: #FDE68A;">स्व. नारायण महतो परिवार</div>
+                <div style="font-weight: 800; font-size: 1.05rem;" id="sbTitle">⚙️ वंशावली टूल्स एवं मेनू</div>
+                <div style="font-size: 0.78rem; color: #FDE68A;" id="sbSubtitle">स्व. नारायण महतो परिवार</div>
             </div>
             <button class="sidebar-close" onclick="toggleSidebar(false)" title="बंद करें">✖</button>
         </div>
 
+        <!-- LANGUAGE SWITCHER IN SIDEBAR -->
         <div class="sidebar-section">
-            <div class="sidebar-section-title">🏠 मुख्य नेविगेशन एवं सभी व्यूज़</div>
+            <div class="sidebar-section-title" id="sbLangHeading">🌐 भाषा चुनें (Language)</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="theme-chip-btn" id="sbLangHiBtn" onclick="setLanguage('hi')" style="text-align:center;">🇮🇳 हिंदी (अ)</button>
+                <button class="theme-chip-btn" id="sbLangEnBtn" onclick="setLanguage('en')" style="text-align:center;">🔤 English (A)</button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title" id="sbNavHeading">🏠 मुख्य नेविगेशन एवं सभी व्यूज़</div>
             <button class="drawer-btn" onclick="goHomeView(); toggleSidebar(false);">
-                <span>🏠 होम (मुख्य वंश-वृक्ष पर जाएँ)</span>
-                <span>खोलें</span>
+                <span id="sbHomeBtnTxt">🏠 होम (मुख्य वंश-वृक्ष पर जाएँ)</span>
+                <span>➔</span>
             </button>
             <div style="margin-top:8px;">
-                <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:5px;">👁️ यहाँ से कोई भी दृश्य चुनें (All Views):</label>
+                <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:5px;" id="sbViewLabel">👁️ यहाँ से कोई भी दृश्य चुनें (All Views):</label>
                 <select class="form-select" id="sidebarViewPicker" onchange="selectUnifiedView(this.value); toggleSidebar(false);" style="padding:8px 10px; font-weight:700; font-size:0.86rem;">
                     <option value="tree">🌳 1. वंश-वृक्ष दृश्य (Tree View)</option>
                     <option value="radial_sun">☀️ 2. 360° सूर्य-चक्र आरेख (Sunburst)</option>
@@ -81,7 +91,7 @@
         </div>
 
         <div class="sidebar-section">
-            <div class="sidebar-section-title">🎨 10 प्रीमियम थीम्स (Theme Options)</div>
+            <div class="sidebar-section-title" id="sbThemeHeading">🎨 10 प्रीमियम थीम्स (Theme Options)</div>
             <div class="theme-grid-box">
                 <button class="theme-chip-btn" onclick="changeTheme('classic')">🎨 क्लासिक</button>
                 <button class="theme-chip-btn" onclick="changeTheme('saffron')">🟠 केसरिया</button>
@@ -97,15 +107,15 @@
         </div>
 
         <div class="sidebar-section">
-            <div class="sidebar-section-title">पारिवारिक योगदान (Contribution)</div>
+            <div class="sidebar-section-title" id="sbContribHeading">पारिवारिक योगदान (Contribution)</div>
             <button class="drawer-btn" id="toggleEditModeBtn" onclick="togglePublicEditMode()">
-                <span>✏️ नाम / फोटो जोड़ें (Edit Mode)</span>
+                <span id="sbEditBtnTxt">✏️ नाम / फोटो जोड़ें (Edit Mode)</span>
                 <span id="editModeStatusText">बंद</span>
             </button>
         </div>
 
         <div class="sidebar-section">
-            <div class="sidebar-section-title">प्रशासन एवं परिचय (Admin & About)</div>
+            <div class="sidebar-section-title" id="sbAdminHeading">प्रशासन एवं परिचय (Admin & About)</div>
             <button class="drawer-btn" onclick="openAdminModal()">
                 <span id="sidebarAdminBtnText">🔒 एडमिन पैनल (Admin Login)</span>
                 <span class="badge-count" id="pendingBadgeCount">0</span>
@@ -115,13 +125,13 @@
                 <span>बाहर निकलें</span>
             </button>
             <button class="drawer-btn" onclick="openAboutModal()">
-                <span>ℹ️ परिचय एवं संपर्क (About)</span>
-                <span>देखें</span>
+                <span id="sbAboutBtnTxt">ℹ️ परिचय एवं संपर्क (About)</span>
+                <span>➔</span>
             </button>
         </div>
     </aside>
 
-    <!-- HERO BANNER HEADER -->
+    <!-- HERO BANNER HEADER (OPTION 1: DEDICATED TOP UTILITY STRIP SO TITLE NEVER OVERLAPS ON MOBILE) -->
     <header class="hero-header">
         <svg class="corner-ornament top-left no-print" viewBox="0 0 100 100" fill="none">
             <path d="M0 0 L100 0 C50 10 10 50 0 100 Z" fill="rgba(253,230,138,0.18)"/>
@@ -134,14 +144,25 @@
             <circle cx="78" cy="22" r="6" fill="#FDE68A"/>
         </svg>
 
-        <button class="menu-floating-btn no-print" onclick="toggleSidebar(true)" title="मेनू खोलें">
-            <span>☰</span> <span>मेनू</span>
-        </button>
+        <!-- OPTION 1: TOP UTILITY STRIP (MENU LEFT | HOME & SYMBOLIC [अ | A] SWITCH RIGHT) -->
+        <div class="hero-top-bar no-print">
+            <button class="top-strip-btn" onclick="toggleSidebar(true)" title="मेनू खोलें">
+                <span>☰</span> <span id="hdrMenuTxt">मेनू</span>
+            </button>
 
-        <button class="home-floating-btn no-print" onclick="goHomeView()" title="होम / मुख्य वृक्ष पर जाएँ">
-            <span>🏠</span> <span>होम</span>
-        </button>
+            <div class="top-strip-right">
+                <button class="top-strip-btn" onclick="goHomeView()" title="होम / मुख्य वृक्ष पर जाएँ">
+                    <span>🏠</span> <span id="hdrHomeTxt">होम</span>
+                </button>
+                <!-- Compact Symbolic Language Switch [ अ | A ] -->
+                <div class="lang-symbol-switch" onclick="toggleLanguageSwitch()" title="भाषा बदलें (Hindi / English)">
+                    <span class="lang-sym active" id="symLangHi">अ</span>
+                    <span class="lang-sym" id="symLangEn">A</span>
+                </div>
+            </div>
+        </div>
 
+        <!-- MAIN TITLE & HERITAGE CLIPART ROW (NEVER OVERLAPS) -->
         <div class="hero-title-row">
             <svg class="heritage-clipart" viewBox="0 0 64 64" aria-hidden="true">
                 <circle cx="32" cy="32" r="28" fill="rgba(254,243,199,0.15)" stroke="#FDE68A" stroke-width="2"/>
@@ -181,21 +202,21 @@
                 <div class="stat-icon">👑</div>
                 <div>
                     <div class="stat-val" id="stat-total">240</div>
-                    <div class="stat-lbl">कुल पारिवारिक सदस्य</div>
+                    <div class="stat-lbl" id="lblStatTotal">कुल पारिवारिक सदस्य</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🌿</div>
                 <div>
                     <div class="stat-val" id="stat-branches">6</div>
-                    <div class="stat-lbl">मुख्य शाखाएँ</div>
+                    <div class="stat-lbl" id="lblStatBranches">मुख्य शाखाएँ</div>
                 </div>
             </div>
             <div class="stat-card" onclick="selectUnifiedView('card')" style="cursor:pointer;" title="पीढ़ीवार कार्ड देखें">
                 <div class="stat-icon">📜</div>
                 <div>
                     <div class="stat-val" id="stat-gens">9</div>
-                    <div class="stat-lbl">पीढ़ियाँ</div>
+                    <div class="stat-lbl" id="lblStatGens">पीढ़ियाँ</div>
                 </div>
             </div>
             <div class="stat-card" onclick="selectUnifiedView('analytics')" style="cursor:pointer;" title="वंश विश्लेषण देखें">
@@ -203,28 +224,28 @@
                 <div>
                     <div class="visitor-split">
                         <span class="stat-val" id="stat-visits">1,250</span>
-                        <span class="today-badge">आज: 3</span>
+                        <span class="today-badge" id="stat-today-badge">आज: 3</span>
                     </div>
-                    <div class="stat-lbl">कुल दर्शक (Total Visits)</div>
+                    <div class="stat-lbl" id="lblStatVisits">कुल दर्शक (Total Visits)</div>
                 </div>
             </div>
         </div>
 
-        <!-- UNIFIED CONTROL BAR (HOME + SEARCH + SINGLE UNIFIED VIEW PICKER + BRANCH + PRINT) -->
+        <!-- UNIFIED CONTROL BAR -->
         <div class="control-bar no-print">
-            <button class="ctrl-btn home-main-btn" onclick="goHomeView()" title="मुख्य पृष्ठ (Home) पर वापस जाएँ">
+            <button class="ctrl-btn home-main-btn" onclick="goHomeView()" id="ctrlHomeBtn" title="मुख्य पृष्ठ (Home) पर वापस जाएँ">
                 🏠 होम
             </button>
 
             <div class="search-wrap">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 सदस्य का नाम खोजें (Fuzzy Search)..." oninput="handleSmartSearch(this.value)" autocomplete="off">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 सदस्य का नाम खोजें (हिंदी / English)..." oninput="handleSmartSearch(this.value)" autocomplete="off">
                 <div id="searchSuggestions" class="search-suggestions"></div>
             </div>
             
             <div class="toolbar-actions">
                 <!-- ALL 8 VIEWS IN ONE SINGLE PLACE -->
                 <div class="unified-view-picker-wrap">
-                    <span class="picker-label">👁️ दृश्य चुनें:</span>
+                    <span class="picker-label" id="lblViewPicker">👁️ दृश्य चुनें:</span>
                     <select class="ctrl-select unified-view-select" id="unifiedViewSelect" onchange="selectUnifiedView(this.value)">
                         <option value="tree">🌳 1. वंश-वृक्ष दृश्य (Tree View)</option>
                         <option value="radial_sun">☀️ 2. 360° सूर्य-चक्र (Sunburst Chart)</option>
@@ -248,7 +269,7 @@
                     <option value="शाखा 6: छोटू महतो">6. छोटू महतो शाखा</option>
                 </select>
 
-                <button class="ctrl-btn ctrl-btn-primary" onclick="triggerSinglePageHDPrint()">🖨️ प्रिंट / PDF</button>
+                <button class="ctrl-btn ctrl-btn-primary" id="ctrlPrintBtn" onclick="triggerSinglePageHDPrint()">🖨️ प्रिंट / PDF</button>
             </div>
         </div>
 
@@ -262,8 +283,8 @@
                     <span id="currentViewLabel">📌 किसी भी नाम पर क्लिक करके फोटो व वंश-पथ देखें | ➕ दबाकर नई संतान जोड़ें</span>
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;" id="treeExpandControls">
-                    <button class="ctrl-btn" style="padding:5px 10px; font-size:0.8rem;" onclick="expandAll()">📂 सभी खोलें</button>
-                    <button class="ctrl-btn" style="padding:5px 10px; font-size:0.8rem;" onclick="collapseAll()">📁 संक्षिप्त करें</button>
+                    <button class="ctrl-btn" id="btnExpandAll" style="padding:5px 10px; font-size:0.8rem;" onclick="expandAll()">📂 सभी खोलें</button>
+                    <button class="ctrl-btn" id="btnCollapseAll" style="padding:5px 10px; font-size:0.8rem;" onclick="collapseAll()">📁 संक्षिप्त करें</button>
                     <button class="ctrl-btn ctrl-btn-success" id="downloadMasterBtn" style="display:none; padding:5px 10px; font-size:0.8rem;" onclick="downloadMasterDataJS()">📥 अपडेटेड vansh-data.js डाउनलोड करें</button>
                     <button class="ctrl-btn" id="topBarLogoutBtn" style="display:none; padding:5px 10px; font-size:0.8rem; color:#DC2626; border-color:#FCA5A5;" onclick="adminLogout()">🚪 लॉगआउट</button>
                 </div>
@@ -292,7 +313,7 @@
                 </div>
             </div>
 
-            <!-- View 4: Card View (With Member Photos) -->
+            <!-- View 4: Card View -->
             <div id="view-card" class="view-section-box">
                 <div id="roadmapContainer"></div>
             </div>
@@ -402,40 +423,44 @@
         </div>
     </div>
 
-    <!-- Modal 2: Add / Edit Member Request Modal -->
+    <!-- Modal 2: Add / Edit Member Modal (2 SEPARATE BOXES FOR HINDI & ENGLISH + DIRECT ADD FOR ADMIN) -->
     <div class="modal-overlay no-print" id="memberEditModal">
         <div class="modal">
             <div class="modal-header">
                 <h3 id="editModalTitle" style="color:var(--primary); margin:0;">✏️ सदस्य विवरण जोड़ें / सुधारें</h3>
                 <button onclick="closeModal('memberEditModal')" class="modal-close-icon" title="बंद करें">✖</button>
             </div>
-            <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">
-                ℹ️ यह बदलाव तुरंत लाइव नहीं होगा। <strong>Admin</strong> द्वारा सत्यापित और Approve किए जाने के बाद ही यह मुख्य वंशावली में दिखाई देगा।
+            <p id="editModalNoticeText" style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">
+                ℹ️ यह बदलाव <strong>Admin</strong> द्वारा सत्यापित और Approve किए जाने के बाद मुख्य वंशावली में दिखाई देगा।
             </p>
             <input type="hidden" id="editTargetId">
             <input type="hidden" id="editActionType">
             <div style="display:flex; flex-direction:column; gap:12px;">
                 <div class="form-group">
-                    <label style="font-weight:700; font-size:0.85rem;">सदस्य का नाम (हिंदी / English)*:</label>
-                    <input type="text" id="reqMemberName" class="form-input" placeholder="उदा. श्री राम कुमार">
+                    <label style="font-weight:700; font-size:0.85rem;">1. सदस्य का नाम (हिंदी में)*:</label>
+                    <input type="text" id="reqMemberName" class="form-input" placeholder="उदा. राहुल कुमार">
                 </div>
                 <div class="form-group">
-                    <label style="font-weight:700; font-size:0.85rem;">फोटो पाथ या लिंक (Photo Path - Optional):</label>
-                    <input type="text" id="reqMemberPhoto" class="form-input" placeholder="उदा. photos/ram_kumar.jpg">
+                    <label style="font-weight:700; font-size:0.85rem;">2. Member Name (in English - सर्च एवं English View हेतु):</label>
+                    <input type="text" id="reqMemberNameEn" class="form-input" placeholder="e.g. Rahul Kumar">
                 </div>
                 <div class="form-group">
-                    <label style="font-weight:700; font-size:0.85rem;">वर्तमान निवास स्थान (Location):</label>
+                    <label style="font-weight:700; font-size:0.85rem;">3. फोटो पाथ या लिंक (Photo Path - Optional):</label>
+                    <input type="text" id="reqMemberPhoto" class="form-input" placeholder="उदा. photos/rahul_kumar.jpg">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:700; font-size:0.85rem;">4. वर्तमान निवास स्थान (Location):</label>
                     <input type="text" id="reqMemberLocation" class="form-input" placeholder="उदा. आशानगर, बिहार शरीफ">
                 </div>
                 <div class="form-group">
-                    <label style="font-weight:700; font-size:0.85rem;">अतिरिक्त जानकारी / जीवनसाथी / पेशा (Notes):</label>
+                    <label style="font-weight:700; font-size:0.85rem;">5. अतिरिक्त जानकारी / जीवनसाथी / पेशा (Notes):</label>
                     <input type="text" id="reqMemberNotes" class="form-input" placeholder="उदा. 💍 सीता देवी | शिक्षक">
                 </div>
-                <div class="form-group">
-                    <label style="font-weight:700; font-size:0.85rem;">निवेदक का नाम (Submitted By)*:</label>
+                <div class="form-group" id="submittedByGroup">
+                    <label style="font-weight:700; font-size:0.85rem;">6. निवेदक का नाम (Submitted By)*:</label>
                     <input type="text" id="reqSubmittedBy" class="form-input" placeholder="अपना नाम लिखें">
                 </div>
-                <button class="ctrl-btn ctrl-btn-primary" onclick="submitEditRequestForApproval()" style="justify-content:center; padding:10px;">✅ एडमिन स्वीकृति हेतु भेजें</button>
+                <button class="ctrl-btn ctrl-btn-primary" id="editModalSubmitBtn" onclick="submitEditRequestForApproval()" style="justify-content:center; padding:10px;">✅ एडमिन स्वीकृति हेतु भेजें</button>
             </div>
         </div>
     </div>
@@ -489,7 +514,7 @@
         </div>
     </div>
 
-    <!-- Modal 4: Admin Security Modal (Login + OTP Password Reset + Dashboard + Change Password + Logout) -->
+    <!-- Modal 4: Admin Security Modal -->
     <div class="modal-overlay no-print" id="adminModal">
         <div class="modal">
             <div class="modal-header">
@@ -515,7 +540,7 @@
                 <p id="adminAuthMsg" style="color:#DC2626; font-size:0.85rem; margin-top:8px; font-weight:700;"></p>
             </div>
 
-            <!-- STEP B: PASSWORD CHANGE / RESET SECTION (OPENS AUTOMATICALLY AFTER OTP OR FROM DASHBOARD) -->
+            <!-- STEP B: PASSWORD CHANGE / RESET SECTION -->
             <div id="adminPasswordChangeSection" style="display:none; background:var(--bg); padding:16px; border-radius:10px; border:1.5px solid var(--accent-gold); margin-bottom:14px;">
                 <h4 style="margin:0 0 8px 0; color:var(--primary);">🔑 नया एडमिन पासवर्ड सेट करें (Change Admin Password)</h4>
                 <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;" id="pwdChangeSubtext">
@@ -532,10 +557,10 @@
                 </div>
             </div>
 
-            <!-- STEP C: ADMIN DASHBOARD (WITH CHANGE PASSWORD & LOGOUT) -->
+            <!-- STEP C: ADMIN DASHBOARD -->
             <div id="adminDashboardSection" style="display:none;">
                 <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <span style="font-weight:800; color:#059669;">🟢 एडमिन लॉगिन सक्रिय</span>
+                    <span style="font-weight:800; color:#059669;">🟢 एडमिन लॉगिन सक्रिय (Direct Add/Edit चालू है)</span>
                     <div style="display:flex; gap:6px; flex-wrap:wrap;">
                         <button class="ctrl-btn" onclick="openPasswordChangeBoxFromDashboard()">🔑 पासवर्ड बदलें</button>
                         <button class="ctrl-btn ctrl-btn-success" onclick="downloadMasterDataJS()">📥 vansh-data.js डाउनलोड</button>
